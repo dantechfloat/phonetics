@@ -12,7 +12,10 @@ Sound Explorer: a kid-friendly static web page for learning English phonetic sym
 python3 -m http.server 8000           # serve locally, then open http://localhost:8000
 python3 tools/build_recordings.py     # regenerate js/recordings.js from words in js/data.js (needs network)
 node tools/check_data.js              # validate js/data.js + js/recordings.js, print recording coverage
+node tools/check_links.js             # check every recording still exists on Commons (needs network)
 ```
+
+CI (`.github/workflows/checks.yml`) runs `check_data.js` on every push and pull request, and `check_links.js` weekly.
 
 The page needs internet access for the Wikimedia recordings and Google Fonts.
 

@@ -28,3 +28,4 @@ An internet connection is needed for the recordings and web fonts.
 - `js/app.js` - page logic and the Sound Game
 - `tools/build_recordings.py` - regenerates `js/recordings.js` after you change the words in `js/data.js`
 - `tools/check_data.js` - checks `js/data.js` and `js/recordings.js` for mistakes (`node tools/check_data.js`)
+- `tools/check_links.js` - checks that every recording still exists on Wikimedia Commons (`node tools/check_links.js`)
