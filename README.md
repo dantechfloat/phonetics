@@ -27,3 +27,4 @@ An internet connection is needed for the recordings and web fonts.
 - `js/audio.js` - playback and fallbacks
 - `js/app.js` - page logic and the Sound Game
 - `tools/build_recordings.py` - regenerates `js/recordings.js` after you change the words in `js/data.js`
+- `tools/check_data.js` - checks `js/data.js` and `js/recordings.js` for mistakes (`node tools/check_data.js`)

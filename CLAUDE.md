@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Sound Explorer: a kid-friendly static web page for learning English phonetic symbols (45 sounds) in two notations, **DJ** (Daniel Jones, British) and **KK** (Kenyon & Knott, American). Plain HTML/CSS/vanilla JS with no build step, no package manager, no framework, and no test suite.
+Sound Explorer: a kid-friendly static web page for learning English phonetic symbols (45 sounds) in two notations, **DJ** (Daniel Jones, British) and **KK** (Kenyon & Knott, American). Plain HTML/CSS/vanilla JS with no build step, no package manager, no framework, and no test suite. The only check is a dependency-free data validator (Node).
 
 ## Commands
 
 ```sh
 python3 -m http.server 8000           # serve locally, then open http://localhost:8000
 python3 tools/build_recordings.py     # regenerate js/recordings.js from words in js/data.js (needs network)
+node tools/check_data.js              # validate js/data.js + js/recordings.js, print recording coverage
 ```
 
 The page needs internet access for the Wikimedia recordings and Google Fonts.
@@ -28,7 +29,7 @@ Scripts are plain globals loaded in a fixed order by `index.html` (order matters
 
 Each phoneme has `id`, `category` (`vowel` | `diphthong` | `consonant`), `group` (a key of `GROUPS`), `dj` and `kk` symbols, `tip`, `sentence`, optional `note`, and exactly 3 `words`, each `{ word, emoji, dj, kk }` with a full transcription in **both** notations. Consonants in the `pair` group also have `voicing` (`voiced` | `voiceless`) and `pair` (the partner's `id`); pairs must point at each other because the pair grid is built from the voiceless side.
 
-When you add or change words, keep both transcriptions consistent with the phoneme symbols, because the app tokenizes transcriptions using the set of `PHONEMES` symbols. Then rerun `tools/build_recordings.py`. It scrapes `word: "..."` with a regex, so keep that literal format.
+When you add or change words, keep both transcriptions consistent with the phoneme symbols, because the app tokenizes transcriptions using the set of `PHONEMES` symbols. Then rerun `tools/build_recordings.py` and `node tools/check_data.js` (it uses the same tokenizer and reports transcriptions missing their sound, unknown characters, inconsistent repeated words and broken pairs). The build script scrapes `word: "..."` with a regex, so keep that literal format.
 
 ### Notation ↔ accent
 
