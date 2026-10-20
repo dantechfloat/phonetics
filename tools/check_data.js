@@ -92,7 +92,7 @@ for (const p of PHONEMES) {
 
   if (!categories.has(p.category)) error(`${where}: unknown category "${p.category}"`);
   if (!(p.group in GROUPS)) error(`${where}: unknown group "${p.group}"`);
-  for (const key of ["tip", "sentence"]) {
+  for (const key of ["name", "tip", "sentence"]) {
     if (!p[key]) error(`${where}: missing ${key}`);
   }
   for (const n of NOTATIONS) {
@@ -127,6 +127,11 @@ for (const p of PHONEMES) {
     }
     checkSameWord(where, w);
   }
+}
+
+const names = PHONEMES.map((p) => p.name).filter(Boolean);
+for (const name of new Set(names.filter((n, i) => names.indexOf(n) !== i))) {
+  error(`name "${name}" is used by more than one sound`);
 }
 
 // ---------- Lead-in words ----------

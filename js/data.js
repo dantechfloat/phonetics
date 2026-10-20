@@ -7,6 +7,10 @@
  *
  * Every example word also carries a full transcription in both notations,
  * so switching the notation updates the whole page consistently.
+ *
+ * "name" is a speakable name for the sound ("short i"), used for screen
+ * readers (which read IPA symbols poorly) and to tell apart sounds that
+ * share a symbol in one notation.
  */
 
 const NOTATIONS = [
@@ -46,7 +50,7 @@ const GROUPS = {
 const PHONEMES = [
   // ---------- Short vowels ----------
   {
-    id: "short-i", category: "vowel", group: "short", dj: "i", kk: "ɪ",
+    id: "short-i", name: "short i", category: "vowel", group: "short", dj: "i", kk: "ɪ",
     tip: "Say a short, relaxed \"i\". Open your mouth just a little. Don't smile too much!",
     words: [
       { word: "fish", emoji: "🐟", dj: "fiʃ", kk: "fɪʃ" },
@@ -56,7 +60,7 @@ const PHONEMES = [
     sentence: "The big pig drinks milk.",
   },
   {
-    id: "short-e", category: "vowel", group: "short", dj: "e", kk: "ɛ",
+    id: "short-e", name: "short e", category: "vowel", group: "short", dj: "e", kk: "ɛ",
     tip: "Open your mouth a little more than for \"i\" and say a short \"e\".",
     words: [
       { word: "bed", emoji: "🛏️", dj: "bed", kk: "bɛd" },
@@ -66,7 +70,7 @@ const PHONEMES = [
     sentence: "Ten red eggs are on the bed.",
   },
   {
-    id: "short-ae", category: "vowel", group: "short", dj: "æ", kk: "æ",
+    id: "short-ae", name: "short a", category: "vowel", group: "short", dj: "æ", kk: "æ",
     tip: "Open your mouth wide like a big smile, and say \"a\" and \"e\" at the same time.",
     words: [
       { word: "cat", emoji: "🐱", dj: "kæt", kk: "kæt" },
@@ -76,7 +80,7 @@ const PHONEMES = [
     sentence: "The cat has a black hat.",
   },
   {
-    id: "short-uh", category: "vowel", group: "short", dj: "ʌ", kk: "ʌ",
+    id: "short-uh", name: "short uh", category: "vowel", group: "short", dj: "ʌ", kk: "ʌ",
     tip: "Open your mouth a little and say a short, strong \"a\" from your throat.",
     words: [
       { word: "cup", emoji: "☕", dj: "kʌp", kk: "kʌp" },
@@ -86,7 +90,7 @@ const PHONEMES = [
     sentence: "The duck sits in the sun.",
   },
   {
-    id: "short-o", category: "vowel", group: "short", dj: "ɔ", kk: "ɑ",
+    id: "short-o", name: "short o", category: "vowel", group: "short", dj: "ɔ", kk: "ɑ",
     tip: "Make your mouth round and open, and say a short \"o\". In American English it sounds more like \"ah\".",
     words: [
       { word: "hot", emoji: "🔥", dj: "hɔt", kk: "hɑt" },
@@ -96,7 +100,7 @@ const PHONEMES = [
     sentence: "My sock is in the box.",
   },
   {
-    id: "short-u", category: "vowel", group: "short", dj: "u", kk: "ʊ",
+    id: "short-u", name: "short oo", category: "vowel", group: "short", dj: "u", kk: "ʊ",
     tip: "Round your lips a little and say a short, soft \"u\".",
     words: [
       { word: "book", emoji: "📖", dj: "buk", kk: "bʊk" },
@@ -106,7 +110,7 @@ const PHONEMES = [
     sentence: "Look at the good book.",
   },
   {
-    id: "schwa", category: "vowel", group: "short", dj: "ə", kk: "ə",
+    id: "schwa", name: "lazy uh", category: "vowel", group: "short", dj: "ə", kk: "ə",
     tip: "This is the lazy sound! Relax your mouth and say a tiny, quick \"uh\".",
     words: [
       { word: "banana", emoji: "🍌", dj: "bəˈnɑːnə", kk: "bəˈnænə" },
@@ -116,7 +120,7 @@ const PHONEMES = [
     sentence: "A panda eats a banana.",
   },
   {
-    id: "schwa-r", category: "vowel", group: "short", dj: "ə", kk: "ɚ",
+    id: "schwa-r", name: "lazy er", category: "vowel", group: "short", dj: "ə", kk: "ɚ",
     tip: "A lazy \"uh\" at the end of a word. In American English, curl your tongue back a little for an \"r\" sound.",
     note: "KK uses a special symbol for this sound. DJ uses the same symbol as the lazy \"uh\".",
     words: [
@@ -129,7 +133,7 @@ const PHONEMES = [
 
   // ---------- Long vowels ----------
   {
-    id: "long-ee", category: "vowel", group: "long", dj: "iː", kk: "i",
+    id: "long-ee", name: "long ee", category: "vowel", group: "long", dj: "iː", kk: "i",
     tip: "Smile wide and say a long \"ee\".",
     words: [
       { word: "sea", emoji: "🌊", dj: "siː", kk: "si" },
@@ -139,7 +143,7 @@ const PHONEMES = [
     sentence: "I see three green trees.",
   },
   {
-    id: "long-ah", category: "vowel", group: "long", dj: "ɑː", kk: "ɑ",
+    id: "long-ah", name: "long ah", category: "vowel", group: "long", dj: "ɑː", kk: "ɑ",
     tip: "Open your mouth wide like at the doctor and say a long \"ah\". In American English, add an \"r\" after it in these words.",
     words: [
       { word: "car", emoji: "🚗", dj: "kɑː", kk: "kɑr" },
@@ -149,7 +153,7 @@ const PHONEMES = [
     sentence: "I see a star from the car.",
   },
   {
-    id: "long-aw", category: "vowel", group: "long", dj: "ɔː", kk: "ɔ",
+    id: "long-aw", name: "long aw", category: "vowel", group: "long", dj: "ɔː", kk: "ɔ",
     tip: "Make your lips round like an \"o\" and say a long \"aw\".",
     words: [
       { word: "ball", emoji: "⚽", dj: "bɔːl", kk: "bɔl" },
@@ -159,7 +163,7 @@ const PHONEMES = [
     sentence: "The horse plays with a ball.",
   },
   {
-    id: "long-oo", category: "vowel", group: "long", dj: "uː", kk: "u",
+    id: "long-oo", name: "long oo", category: "vowel", group: "long", dj: "uː", kk: "u",
     tip: "Push your lips forward like a kiss and say a long \"oo\".",
     words: [
       { word: "moon", emoji: "🌙", dj: "muːn", kk: "mun" },
@@ -169,7 +173,7 @@ const PHONEMES = [
     sentence: "The moon is over the school.",
   },
   {
-    id: "long-er", category: "vowel", group: "long", dj: "əː", kk: "ɝ",
+    id: "long-er", name: "long er", category: "vowel", group: "long", dj: "əː", kk: "ɝ",
     tip: "Keep your mouth half open and say a long \"er\". In American English, curl your tongue back.",
     words: [
       { word: "bird", emoji: "🐦", dj: "bəːd", kk: "bɝd" },
@@ -181,7 +185,7 @@ const PHONEMES = [
 
   // ---------- Diphthongs ----------
   {
-    id: "di-ay", category: "diphthong", group: "diphthong", dj: "ei", kk: "e",
+    id: "di-ay", name: "ay", category: "diphthong", group: "diphthong", dj: "ei", kk: "e",
     tip: "Start with \"e\" and slide to \"i\": \"e-i\".",
     words: [
       { word: "cake", emoji: "🎂", dj: "keik", kk: "kek" },
@@ -191,7 +195,7 @@ const PHONEMES = [
     sentence: "I eat cake on the train.",
   },
   {
-    id: "di-eye", category: "diphthong", group: "diphthong", dj: "ai", kk: "aɪ",
+    id: "di-eye", name: "eye", category: "diphthong", group: "diphthong", dj: "ai", kk: "aɪ",
     tip: "Start with a big \"a\" and slide to \"i\": \"a-i\".",
     words: [
       { word: "bike", emoji: "🚲", dj: "baik", kk: "baɪk" },
@@ -201,7 +205,7 @@ const PHONEMES = [
     sentence: "I ride my bike and fly a kite.",
   },
   {
-    id: "di-oy", category: "diphthong", group: "diphthong", dj: "ɔi", kk: "ɔɪ",
+    id: "di-oy", name: "oy", category: "diphthong", group: "diphthong", dj: "ɔi", kk: "ɔɪ",
     tip: "Start with a round \"o\" and slide to \"i\": \"o-i\".",
     words: [
       { word: "boy", emoji: "👦", dj: "bɔi", kk: "bɔɪ" },
@@ -211,7 +215,7 @@ const PHONEMES = [
     sentence: "The boy has a toy.",
   },
   {
-    id: "di-ow", category: "diphthong", group: "diphthong", dj: "au", kk: "aʊ",
+    id: "di-ow", name: "ow", category: "diphthong", group: "diphthong", dj: "au", kk: "aʊ",
     tip: "Start with a big \"a\" and slide to \"u\": \"a-u\". Like saying \"Ouch!\"",
     words: [
       { word: "cow", emoji: "🐄", dj: "kau", kk: "kaʊ" },
@@ -221,7 +225,7 @@ const PHONEMES = [
     sentence: "A mouse is in the house.",
   },
   {
-    id: "di-oh", category: "diphthong", group: "diphthong", dj: "ou", kk: "o",
+    id: "di-oh", name: "oh", category: "diphthong", group: "diphthong", dj: "ou", kk: "o",
     tip: "Start with \"o\" and slide to \"u\" as your lips get rounder: \"o-u\".",
     words: [
       { word: "boat", emoji: "⛵", dj: "bout", kk: "bot" },
@@ -231,7 +235,7 @@ const PHONEMES = [
     sentence: "Snow is on my nose.",
   },
   {
-    id: "di-ear", category: "diphthong", group: "diphthong", dj: "iə", kk: "ɪr",
+    id: "di-ear", name: "ear", category: "diphthong", group: "diphthong", dj: "iə", kk: "ɪr",
     tip: "Start with \"i\" and slide to a lazy \"uh\". In American English, finish with an \"r\".",
     words: [
       { word: "ear", emoji: "👂", dj: "iə", kk: "ɪr" },
@@ -241,7 +245,7 @@ const PHONEMES = [
     sentence: "The deer has big ears.",
   },
   {
-    id: "di-air", category: "diphthong", group: "diphthong", dj: "ɛə", kk: "ɛr",
+    id: "di-air", name: "air", category: "diphthong", group: "diphthong", dj: "ɛə", kk: "ɛr",
     tip: "Start with \"e\" and slide to a lazy \"uh\". In American English, finish with an \"r\".",
     words: [
       { word: "bear", emoji: "🐻", dj: "bɛə", kk: "bɛr" },
@@ -251,7 +255,7 @@ const PHONEMES = [
     sentence: "The bear sits on a chair.",
   },
   {
-    id: "di-oor", category: "diphthong", group: "diphthong", dj: "uə", kk: "ʊr",
+    id: "di-oor", name: "oor", category: "diphthong", group: "diphthong", dj: "uə", kk: "ʊr",
     tip: "Start with a soft \"u\" and slide to a lazy \"uh\". In American English, finish with an \"r\".",
     note: "Many speakers today say these words with \"ɔː\" instead.",
     words: [
@@ -264,7 +268,7 @@ const PHONEMES = [
 
   // ---------- Consonants: partner pairs ----------
   {
-    id: "c-p", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-b", dj: "p", kk: "p",
+    id: "c-p", name: "p", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-b", dj: "p", kk: "p",
     tip: "Close your lips, then pop them open with a puff of air. No voice!",
     words: [
       { word: "pen", emoji: "🖊️", dj: "pen", kk: "pɛn" },
@@ -274,7 +278,7 @@ const PHONEMES = [
     sentence: "The pig has a pink pen.",
   },
   {
-    id: "c-b", category: "consonant", group: "pair", voicing: "voiced", pair: "c-p", dj: "b", kk: "b",
+    id: "c-b", name: "b", category: "consonant", group: "pair", voicing: "voiced", pair: "c-p", dj: "b", kk: "b",
     tip: "Close your lips, then pop them open while using your voice.",
     words: [
       { word: "ball", emoji: "⚽", dj: "bɔːl", kk: "bɔl" },
@@ -284,7 +288,7 @@ const PHONEMES = [
     sentence: "Ben has a big blue ball.",
   },
   {
-    id: "c-t", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-d", dj: "t", kk: "t",
+    id: "c-t", name: "t", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-d", dj: "t", kk: "t",
     tip: "Touch the top of your mouth behind your teeth with your tongue, then let go with a puff of air.",
     words: [
       { word: "ten", emoji: "🔟", dj: "ten", kk: "tɛn" },
@@ -294,7 +298,7 @@ const PHONEMES = [
     sentence: "Tom has ten toys.",
   },
   {
-    id: "c-d", category: "consonant", group: "pair", voicing: "voiced", pair: "c-t", dj: "d", kk: "d",
+    id: "c-d", name: "d", category: "consonant", group: "pair", voicing: "voiced", pair: "c-t", dj: "d", kk: "d",
     tip: "Same as \"t\", but use your voice.",
     words: [
       { word: "dog", emoji: "🐶", dj: "dɔg", kk: "dɔg" },
@@ -304,7 +308,7 @@ const PHONEMES = [
     sentence: "The dog is at the door.",
   },
   {
-    id: "c-k", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-g", dj: "k", kk: "k",
+    id: "c-k", name: "k", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-g", dj: "k", kk: "k",
     tip: "Lift the back of your tongue, then let go with a puff of air.",
     words: [
       { word: "key", emoji: "🔑", dj: "kiː", kk: "ki" },
@@ -314,7 +318,7 @@ const PHONEMES = [
     sentence: "Kate has a key and a cake.",
   },
   {
-    id: "c-g", category: "consonant", group: "pair", voicing: "voiced", pair: "c-k", dj: "g", kk: "g",
+    id: "c-g", name: "g", category: "consonant", group: "pair", voicing: "voiced", pair: "c-k", dj: "g", kk: "g",
     tip: "Same as \"k\", but use your voice.",
     words: [
       { word: "gift", emoji: "🎁", dj: "gift", kk: "gɪft" },
@@ -324,7 +328,7 @@ const PHONEMES = [
     sentence: "The goat has a gift.",
   },
   {
-    id: "c-f", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-v", dj: "f", kk: "f",
+    id: "c-f", name: "f", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-v", dj: "f", kk: "f",
     tip: "Put your top teeth on your bottom lip and blow air.",
     words: [
       { word: "fish", emoji: "🐟", dj: "fiʃ", kk: "fɪʃ" },
@@ -334,7 +338,7 @@ const PHONEMES = [
     sentence: "The fox sees a fish.",
   },
   {
-    id: "c-v", category: "consonant", group: "pair", voicing: "voiced", pair: "c-f", dj: "v", kk: "v",
+    id: "c-v", name: "v", category: "consonant", group: "pair", voicing: "voiced", pair: "c-f", dj: "v", kk: "v",
     tip: "Put your top teeth on your bottom lip and use your voice. Your lip will tickle!",
     words: [
       { word: "van", emoji: "🚐", dj: "væn", kk: "væn" },
@@ -344,7 +348,7 @@ const PHONEMES = [
     sentence: "Five vans are very big.",
   },
   {
-    id: "c-th", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-dh", dj: "θ", kk: "θ",
+    id: "c-th", name: "quiet th", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-dh", dj: "θ", kk: "θ",
     tip: "Put the tip of your tongue between your teeth and blow air softly.",
     words: [
       { word: "three", emoji: "3️⃣", dj: "θriː", kk: "θri" },
@@ -354,7 +358,7 @@ const PHONEMES = [
     sentence: "Thank you for the three gifts.",
   },
   {
-    id: "c-dh", category: "consonant", group: "pair", voicing: "voiced", pair: "c-th", dj: "ð", kk: "ð",
+    id: "c-dh", name: "buzzy th", category: "consonant", group: "pair", voicing: "voiced", pair: "c-th", dj: "ð", kk: "ð",
     tip: "Put the tip of your tongue between your teeth and use your voice.",
     words: [
       { word: "this", emoji: "☝️", dj: "ðis", kk: "ðɪs" },
@@ -364,7 +368,7 @@ const PHONEMES = [
     sentence: "This is my mother and father.",
   },
   {
-    id: "c-s", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-z", dj: "s", kk: "s",
+    id: "c-s", name: "s", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-z", dj: "s", kk: "s",
     tip: "Put your teeth close together and hiss like a snake: \"sss\".",
     words: [
       { word: "sun", emoji: "☀️", dj: "sʌn", kk: "sʌn" },
@@ -374,7 +378,7 @@ const PHONEMES = [
     sentence: "Sam sees the sun from the bus.",
   },
   {
-    id: "c-z", category: "consonant", group: "pair", voicing: "voiced", pair: "c-s", dj: "z", kk: "z",
+    id: "c-z", name: "z", category: "consonant", group: "pair", voicing: "voiced", pair: "c-s", dj: "z", kk: "z",
     tip: "Same as \"s\", but use your voice. Buzz like a bee: \"zzz\".",
     words: [
       { word: "zoo", emoji: "🦁", dj: "zuː", kk: "zu" },
@@ -384,7 +388,7 @@ const PHONEMES = [
     sentence: "I see a zebra at the zoo.",
   },
   {
-    id: "c-sh", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-zh", dj: "ʃ", kk: "ʃ",
+    id: "c-sh", name: "sh", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-zh", dj: "ʃ", kk: "ʃ",
     tip: "Round your lips and say \"shh\", like asking someone to be quiet.",
     words: [
       { word: "shoe", emoji: "👟", dj: "ʃuː", kk: "ʃu" },
@@ -394,7 +398,7 @@ const PHONEMES = [
     sentence: "She sees a fish from the ship.",
   },
   {
-    id: "c-zh", category: "consonant", group: "pair", voicing: "voiced", pair: "c-sh", dj: "ʒ", kk: "ʒ",
+    id: "c-zh", name: "zh", category: "consonant", group: "pair", voicing: "voiced", pair: "c-sh", dj: "ʒ", kk: "ʒ",
     tip: "Same as \"sh\", but use your voice.",
     words: [
       { word: "treasure", emoji: "💎", dj: "ˈtreʒə", kk: "ˈtrɛʒɚ" },
@@ -404,7 +408,7 @@ const PHONEMES = [
     sentence: "We find treasure on television.",
   },
   {
-    id: "c-ch", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-j", dj: "tʃ", kk: "tʃ",
+    id: "c-ch", name: "ch", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-j", dj: "tʃ", kk: "tʃ",
     tip: "Start with \"t\" and quickly go to \"sh\": \"ch\", like a sneeze!",
     words: [
       { word: "cheese", emoji: "🧀", dj: "tʃiːz", kk: "tʃiz" },
@@ -414,7 +418,7 @@ const PHONEMES = [
     sentence: "I eat cheese for lunch.",
   },
   {
-    id: "c-j", category: "consonant", group: "pair", voicing: "voiced", pair: "c-ch", dj: "dʒ", kk: "dʒ",
+    id: "c-j", name: "j", category: "consonant", group: "pair", voicing: "voiced", pair: "c-ch", dj: "dʒ", kk: "dʒ",
     tip: "Same as \"ch\", but use your voice: \"j\".",
     words: [
       { word: "juice", emoji: "🧃", dj: "dʒuːs", kk: "dʒus" },
@@ -426,7 +430,7 @@ const PHONEMES = [
 
   // ---------- Consonants: others ----------
   {
-    id: "c-h", category: "consonant", group: "other", voicing: "voiceless", dj: "h", kk: "h",
+    id: "c-h", name: "h", category: "consonant", group: "other", voicing: "voiceless", dj: "h", kk: "h",
     tip: "Open your mouth and breathe out, like fogging up a window: \"hhh\".",
     words: [
       { word: "hat", emoji: "🎩", dj: "hæt", kk: "hæt" },
@@ -436,7 +440,7 @@ const PHONEMES = [
     sentence: "A horse is in the house.",
   },
   {
-    id: "c-m", category: "consonant", group: "other", voicing: "voiced", dj: "m", kk: "m",
+    id: "c-m", name: "m", category: "consonant", group: "other", voicing: "voiced", dj: "m", kk: "m",
     tip: "Close your lips and hum: \"mmm\", like something yummy!",
     words: [
       { word: "moon", emoji: "🌙", dj: "muːn", kk: "mun" },
@@ -446,7 +450,7 @@ const PHONEMES = [
     sentence: "My mouse drinks milk.",
   },
   {
-    id: "c-n", category: "consonant", group: "other", voicing: "voiced", dj: "n", kk: "n",
+    id: "c-n", name: "n", category: "consonant", group: "other", voicing: "voiced", dj: "n", kk: "n",
     tip: "Touch the top of your mouth behind your teeth with your tongue and hum through your nose: \"nnn\".",
     words: [
       { word: "nose", emoji: "👃", dj: "nouz", kk: "noz" },
@@ -456,7 +460,7 @@ const PHONEMES = [
     sentence: "Nine nuts are on my nose.",
   },
   {
-    id: "c-ng", category: "consonant", group: "other", voicing: "voiced", dj: "ŋ", kk: "ŋ",
+    id: "c-ng", name: "ng", category: "consonant", group: "other", voicing: "voiced", dj: "ŋ", kk: "ŋ",
     tip: "Lift the back of your tongue like \"k\", and hum through your nose: \"ng\". Don't say \"g\" at the end!",
     words: [
       { word: "king", emoji: "👑", dj: "kiŋ", kk: "kɪŋ" },
@@ -466,7 +470,7 @@ const PHONEMES = [
     sentence: "The king can sing.",
   },
   {
-    id: "c-l", category: "consonant", group: "other", voicing: "voiced", dj: "l", kk: "l",
+    id: "c-l", name: "l", category: "consonant", group: "other", voicing: "voiced", dj: "l", kk: "l",
     tip: "Touch the top of your mouth behind your teeth with your tongue tip and use your voice: \"lll\".",
     words: [
       { word: "lion", emoji: "🦁", dj: "ˈlaiən", kk: "ˈlaɪən" },
@@ -476,7 +480,7 @@ const PHONEMES = [
     sentence: "The lion plays with a leaf.",
   },
   {
-    id: "c-r", category: "consonant", group: "other", voicing: "voiced", dj: "r", kk: "r",
+    id: "c-r", name: "r", category: "consonant", group: "other", voicing: "voiced", dj: "r", kk: "r",
     tip: "Round your lips a little and curl your tongue back. Don't touch the top of your mouth!",
     words: [
       { word: "red", emoji: "🔴", dj: "red", kk: "rɛd" },
@@ -486,7 +490,7 @@ const PHONEMES = [
     sentence: "The red rabbit runs in the rain.",
   },
   {
-    id: "c-w", category: "consonant", group: "other", voicing: "voiced", dj: "w", kk: "w",
+    id: "c-w", name: "w", category: "consonant", group: "other", voicing: "voiced", dj: "w", kk: "w",
     tip: "Push your lips forward into a small circle, then open them: \"w\".",
     words: [
       { word: "water", emoji: "💧", dj: "ˈwɔːtə", kk: "ˈwɔtɚ" },
@@ -496,7 +500,7 @@ const PHONEMES = [
     sentence: "We wash the window with water.",
   },
   {
-    id: "c-y", category: "consonant", group: "other", voicing: "voiced", dj: "j", kk: "j",
+    id: "c-y", name: "y", category: "consonant", group: "other", voicing: "voiced", dj: "j", kk: "j",
     tip: "Start with a quick \"ee\" and slide into the next sound: \"y\". It is not the letter \"j\"!",
     words: [
       { word: "yes", emoji: "🙆", dj: "jes", kk: "jɛs" },

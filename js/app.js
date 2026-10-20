@@ -74,13 +74,24 @@
     return a;
   }
 
+  // One persistent live region for screen readers. Live regions that are
+  // created already filled in (like a re-rendered view) often aren't read.
+  const announcer = document.getElementById("announcer");
+  function announce(message) {
+    announcer.textContent = "";
+    // A tick later, so the same message twice in a row is still read.
+    setTimeout(() => { announcer.textContent = message; }, 50);
+  }
+
   const toastEl = document.getElementById("toast");
   let toastTimer = null;
-  function toast(message) {
+  /** Show a short message. Pass announce: false for ones a screen reader doesn't need. */
+  function toast(message, { announce: speak = true } = {}) {
     toastEl.textContent = message;
     toastEl.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1600);
+    if (speak) announce(message);
   }
 
   // ---------- Splitting a transcription into sounds ----------
@@ -132,7 +143,8 @@
   // ---------- Audio ----------
   async function sayWord(word) {
     const source = await SoundPlayer.playWord(word, { accent: accent(), slow: state.slow });
-    if (source === "recorded") toast("🎙️ Real voice");
+    // Only the fallbacks are worth announcing; "real voice" is the normal case.
+    if (source === "recorded") toast("🎙️ Real voice", { announce: false });
     else if (source === "recorded-other") {
       const other = Object.keys(accentNames).find((a) => a !== accent());
       toast(`🎙️ Real voice (${accentNames[other]})`);
@@ -214,7 +226,7 @@
       type: "button",
       class: "card",
       dataset: { cat: p.category, ...(p.voicing ? { voicing: p.voicing } : {}) },
-      "aria-label": `Sound ${sym(p)}, as in ${first.word}`,
+      "aria-label": `${p.name} sound, as in ${first.word}`,
       onclick: () => openDetail(p.id),
     }, [
       el("span", { class: "card-symbol", text: wrap(sym(p)) }),
@@ -288,7 +300,7 @@
       class: "detail-head",
       dataset: { cat: p.category, ...(p.voicing ? { voicing: p.voicing } : {}) },
     }, [
-      el("p", { class: "detail-symbol", id: "detail-symbol", text: wrap(target) }),
+      el("p", { class: "detail-symbol", text: wrap(target) }),
       el("div", {}, [
         el("p", { class: "detail-both" }, NOTATIONS.flatMap((n, i) => [
           `${i ? "   |   " : ""}${n.label}: `, el("span", { class: "ipa", text: wrap(p[n.id]) }),
@@ -357,6 +369,7 @@
       }, [`Compare with its partner sound ${wrap(sym(partner))} →`]) : null,
     ].filter(Boolean));
 
+    dialog.setAttribute("aria-label", `${p.name} sound, ${wrap(target)}`);
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
   }
@@ -454,8 +467,12 @@
     const q = state.quiz;
     if (q.answered) return;
     q.answered = id;
-    if (id === q.question.targetId) q.score++;
+    const target = byId[q.question.targetId];
+    const right = id === target.id;
+    if (right) q.score++;
+    q.praise = shuffle(["Great job! ⭐", "You got it! ⭐", "Super! ⭐", "Well done! ⭐"])[0];
     render();
+    announce(right ? q.praise : `Nice try! The answer is the ${target.name} sound.`);
   }
 
   function renderQuiz() {
@@ -502,12 +519,13 @@
 
     const { word, targetId, optionIds } = q.question;
     const target = byId[targetId];
-    const feedback = el("p", { class: "feedback", role: "status" });
+    // Visual only: answer() announces the result through the live region.
+    const feedback = el("p", { class: "feedback", "aria-hidden": "true" });
 
     if (q.answered) {
       if (q.answered === targetId) {
         feedback.classList.add("good");
-        feedback.textContent = shuffle(["Great job! ⭐", "You got it! ⭐", "Super! ⭐", "Well done! ⭐"])[0];
+        feedback.textContent = q.praise;
       } else {
         feedback.classList.add("bad");
         feedback.textContent = `Nice try! The answer is ${wrap(sym(target))}.`;
@@ -532,7 +550,7 @@
         return el("button", {
           type: "button", class: cls,
           disabled: q.answered ? "" : false,
-          "aria-label": `Sound ${sym(p)}`,
+          "aria-label": `${p.name} sound`,
           onclick: () => answer(id),
         }, wrap(sym(p)));
       })),

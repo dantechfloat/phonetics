@@ -40,7 +40,7 @@
 
   <main id="view" tabindex="-1"></main>
 
-  <dialog id="detail" aria-labelledby="detail-symbol">
+  <dialog id="detail">
     <div class="detail-inner" id="detail-content"></div>
   </dialog>
 
@@ -48,7 +48,8 @@
     <div class="detail-inner" id="credits-content"></div>
   </dialog>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast" aria-hidden="true"></div>
+  <div class="sr-only" id="announcer" role="status" aria-live="polite"></div>
 
   <footer class="site-footer">
     <p><strong>DJ</strong> (Daniel Jones) symbols show British English. <strong>KK</strong> (Kenyon &amp; Knott) symbols show American English. Use the switch at the top to change them.</p>
