@@ -144,6 +144,17 @@
     return span;
   }
 
+  /** Transcription element with the sounds that differ from `other` highlighted. */
+  function differenceNode(transcription, other) {
+    const otherTokens = tokenize(other, state.notation);
+    const span = el("span", { class: "word-ipa" }, "/");
+    tokenize(transcription, state.notation).forEach((token, i) => {
+      span.append(token !== otherTokens[i] ? el("mark", { text: token }) : token);
+    });
+    span.append("/");
+    return span;
+  }
+
   // ---------- Audio ----------
   async function sayWord(word) {
     const source = await SoundPlayer.playWord(word, { accent: accent(), slow: state.slow });
@@ -499,18 +510,20 @@
   // ---------- Sound Game ----------
   // Every game asks QUIZ_LENGTH questions. A question has a type, an answer
   // and options: sound ids for "hear", words for the picture games.
-  const allWords = [...new Map(PHONEMES.flatMap((p) => p.words).map((w) => [w.word, w])).values()];
+  const allWords = [...new Map([...PHONEMES.flatMap((p) => p.words), ...MINIMAL_PAIRS.flat()]
+    .map((w) => [w.word, w])).values()];
   const wordByText = Object.fromEntries(allWords.map((w) => [w.word, w]));
 
   const MODES = {
     vowel: { type: "hear", label: "Vowel Sounds", emoji: "🍎", pool: (p) => p.category !== "consonant" },
     consonant: { type: "hear", label: "Consonant Sounds", emoji: "🐝", pool: (p) => p.category === "consonant" },
     mix: { type: "hear", label: "Mix It Up", emoji: "🌈", pool: () => true },
+    pairs: { type: "pairs", label: "Which Word?", emoji: "🐑" },
     find: { type: "find", label: "Find the Sound", emoji: "🔎", pool: () => true },
     read: { type: "read", label: "Read It!", emoji: "📖" },
   };
   const GAME_GROUPS = [
-    { title: "👂 Hear it", text: "Listen to a word and find its sound.", modes: ["vowel", "consonant", "mix"], earsOnly: true },
+    { title: "👂 Hear it", text: "Listen to a word and find its sound, or tell two words apart (ship or sheep?).", modes: ["vowel", "consonant", "mix", "pairs"], earsOnly: true },
     { title: "🔤 Read it", text: "Read the symbols and find the picture.", modes: ["find", "read"] },
   ];
 
@@ -518,8 +531,8 @@
     const m = MODES[mode];
     // Every pool has at least QUIZ_LENGTH items, so a round never repeats one.
     // Questions are made up front so the next word's audio can be preloaded.
-    const questions = m.type === "read"
-      ? shuffle(allWords).slice(0, QUIZ_LENGTH).map(makeReadQuestion)
+    const questions = m.type === "read" ? shuffle(allWords).slice(0, QUIZ_LENGTH).map(makeReadQuestion)
+      : m.type === "pairs" ? shuffle(MINIMAL_PAIRS).slice(0, QUIZ_LENGTH).map(makePairsQuestion)
       : shuffle(PHONEMES.filter(m.pool)).slice(0, QUIZ_LENGTH)
         .map(m.type === "hear" ? makeHearQuestion : makeFindQuestion);
     state.quiz = { mode, questions, index: 0, score: 0, question: null, answered: null };
@@ -580,6 +593,15 @@
     return { type: "read", word, answer: word.word, options };
   }
 
+  /** Hear one word of a minimal pair, pick which one it was. */
+  function makePairsQuestion(pair) {
+    const word = pickOne(pair);
+    return { type: "pairs", pair, word, answer: word.word, options: shuffle(pair).map((w) => w.word) };
+  }
+
+  // Games where the word is played and the child answers by ear.
+  const LISTENING = new Set(["hear", "pairs"]);
+
   function nextQuestion() {
     const q = state.quiz;
     q.question = q.questions[q.index];
@@ -588,7 +610,7 @@
     if (upcoming) SoundPlayer.preload([upcoming.word.word], { accent: accent() });
     render();
     // The button that was clicked is gone; keep keyboard users in the game.
-    if (q.question.type === "hear") {
+    if (LISTENING.has(q.question.type)) {
       view.querySelector(".quiz .play-btn").focus();
       sayWord(q.question.word.word);
     } else {
@@ -608,8 +630,8 @@
     announce(right ? q.praise
       : question.type === "hear" ? `Nice try! The answer is the ${byId[question.answer].name} sound.`
       : `Nice try! The answer is ${question.answer}.`);
-    // In the picture games, hearing the answer is part of the reward.
-    if (question.type !== "hear") sayWord(question.answer);
+    // In the reading games, hearing the answer is part of the reward.
+    if (!LISTENING.has(question.type)) sayWord(question.answer);
   }
 
   function renderGameMenu(box) {
@@ -678,6 +700,18 @@
         el("p", { class: "quiz-symbol", "aria-label": `${target.name} sound`, text: wrap(sym(target)) }),
         el("p", { class: "quiz-question", text: "Which word has this sound?" }),
         answered ? el("p", {}, [el("strong", { text: word.word }), " ", transcriptionNode(word[state.notation], sym(target))]) : null,
+      ];
+    }
+    if (type === "pairs") {
+      return [
+        el("div", { class: "quiz-emoji", "aria-hidden": "true", text: "👂" }),
+        el("p", { class: "quiz-question", text: "Which word do you hear?" }),
+        el("button", { type: "button", class: "play-btn", onclick: () => sayWord(word.word) }, "🔊 Listen again"),
+        // After answering, show where the two words differ.
+        answered ? el("p", { class: "pair-compare" }, question.pair.map((w, i) => el("span", {}, [
+          el("strong", { text: w.word }), " ",
+          differenceNode(w[state.notation], question.pair[1 - i][state.notation]),
+        ]))) : null,
       ];
     }
     // "read"

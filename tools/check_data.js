@@ -23,11 +23,11 @@ function loadGlobals(files) {
     vm.runInContext(code, context, { filename: file });
   }
   return vm.runInContext(
-    "({ NOTATIONS, LEAD_INS, CATEGORIES, GROUPS, PHONEMES, RECORDINGS })", context
+    "({ NOTATIONS, LEAD_INS, CATEGORIES, GROUPS, PHONEMES, MINIMAL_PAIRS, RECORDINGS })", context
   );
 }
 
-const { NOTATIONS, LEAD_INS, CATEGORIES, GROUPS, PHONEMES, RECORDINGS } =
+const { NOTATIONS, LEAD_INS, CATEGORIES, GROUPS, PHONEMES, MINIMAL_PAIRS, RECORDINGS } =
   loadGlobals(["js/data.js", "js/recordings.js"]);
 
 const errors = [];
@@ -133,6 +133,29 @@ const names = PHONEMES.map((p) => p.name).filter(Boolean);
 for (const name of new Set(names.filter((n, i) => names.indexOf(n) !== i))) {
   error(`name "${name}" is used by more than one sound`);
 }
+
+// ---------- Minimal pairs ----------
+MINIMAL_PAIRS.forEach((pair, i) => {
+  const where = `MINIMAL_PAIRS[${i}]`;
+  if (!Array.isArray(pair) || pair.length !== 2) {
+    error(`${where}: needs exactly 2 words`);
+    return;
+  }
+  const [a, b] = pair;
+  for (const w of pair) {
+    if (!w.word || !w.emoji) error(`${where}: every word needs word and emoji`);
+    checkSameWord(where, w);
+  }
+  if (a.emoji === b.emoji) error(`${where}: "${a.word}" and "${b.word}" have the same picture`);
+  for (const n of NOTATIONS) {
+    const ta = checkTranscription(`${where} / "${a.word}"`, a[n.id], n.id);
+    const tb = checkTranscription(`${where} / "${b.word}"`, b[n.id], n.id);
+    const differences = ta.filter((t, j) => t !== tb[j]).length;
+    if (ta.length !== tb.length || differences !== 1) {
+      error(`${where}: /${a[n.id]}/ and /${b[n.id]}/ should differ in exactly one sound (${n.label})`);
+    }
+  }
+});
 
 // ---------- Lead-in words ----------
 for (const [lead, forms] of Object.entries(LEAD_INS)) {

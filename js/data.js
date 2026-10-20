@@ -510,3 +510,64 @@ const PHONEMES = [
     sentence: "Yes, the yo-yo is yellow.",
   },
 ];
+
+// Minimal pairs for the "Which Word?" game: two words that differ in exactly
+// one sound. Words that also appear in PHONEMES must match them exactly.
+const MINIMAL_PAIRS = [
+  [
+    { word: "ship", emoji: "🚢", dj: "ʃip", kk: "ʃɪp" },
+    { word: "sheep", emoji: "🐑", dj: "ʃiːp", kk: "ʃip" },
+  ],
+  [
+    { word: "hill", emoji: "⛰️", dj: "hil", kk: "hɪl" },
+    { word: "heel", emoji: "👠", dj: "hiːl", kk: "hil" },
+  ],
+  [
+    { word: "cat", emoji: "🐱", dj: "kæt", kk: "kæt" },
+    { word: "cut", emoji: "✂️", dj: "kʌt", kk: "kʌt" },
+  ],
+  [
+    { word: "cap", emoji: "🧢", dj: "kæp", kk: "kæp" },
+    { word: "cup", emoji: "☕", dj: "kʌp", kk: "kʌp" },
+  ],
+  [
+    { word: "pen", emoji: "🖊️", dj: "pen", kk: "pɛn" },
+    { word: "pan", emoji: "🍳", dj: "pæn", kk: "pæn" },
+  ],
+  [
+    { word: "pen", emoji: "🖊️", dj: "pen", kk: "pɛn" },
+    { word: "pin", emoji: "📌", dj: "pin", kk: "pɪn" },
+  ],
+  [
+    { word: "hat", emoji: "🎩", dj: "hæt", kk: "hæt" },
+    { word: "hot", emoji: "🔥", dj: "hɔt", kk: "hɑt" },
+  ],
+  [
+    { word: "coat", emoji: "🧥", dj: "kout", kk: "kot" },
+    { word: "goat", emoji: "🐐", dj: "gout", kk: "got" },
+  ],
+  [
+    { word: "pear", emoji: "🍐", dj: "pɛə", kk: "pɛr" },
+    { word: "bear", emoji: "🐻", dj: "bɛə", kk: "bɛr" },
+  ],
+  [
+    { word: "boat", emoji: "⛵", dj: "bout", kk: "bot" },
+    { word: "vote", emoji: "🗳️", dj: "vout", kk: "vot" },
+  ],
+  [
+    { word: "three", emoji: "3️⃣", dj: "θriː", kk: "θri" },
+    { word: "tree", emoji: "🌳", dj: "triː", kk: "tri" },
+  ],
+  [
+    { word: "lock", emoji: "🔒", dj: "lɔk", kk: "lɑk" },
+    { word: "rock", emoji: "🪨", dj: "rɔk", kk: "rɑk" },
+  ],
+  [
+    { word: "mouse", emoji: "🐭", dj: "maus", kk: "maʊs" },
+    { word: "mouth", emoji: "👄", dj: "mauθ", kk: "maʊθ" },
+  ],
+  [
+    { word: "chips", emoji: "🍟", dj: "tʃips", kk: "tʃɪps" },
+    { word: "ships", emoji: "🚢", dj: "ʃips", kk: "ʃɪps" },
+  ],
+];

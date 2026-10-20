@@ -244,6 +244,19 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "cap": {
+    "us": {
+      "file": "En-us-cap.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/05/En-us-cap.ogg/En-us-cap.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/0/05/En-us-cap.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-cap.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "car": {
     "uk": {
       "file": "En-uk-a car.ogg",
@@ -342,6 +355,43 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "chips": {
+    "us": {
+      "file": "en-us-chips.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/91/En-us-chips.ogg/En-us-chips.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/9/91/En-us-chips.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-chips.ogg",
+      "author": "BirdHopper",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    }
+  },
+  "coat": {
+    "uk": {
+      "file": "En-uk-coat.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7e/En-uk-coat.ogg/En-uk-coat.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/7/7e/En-uk-coat.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-uk-coat.ogg",
+      "author": "Association Shtooka, Judith Franck",
+      "license": "CC BY 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en"
+    },
+    "us": {
+      "file": "en-us-coat.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/07/En-us-coat.ogg/En-us-coat.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/0/07/En-us-coat.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-coat.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "coin": {
     "us": {
       "file": "en-us-coin.ogg",
@@ -425,6 +475,19 @@ const RECORDINGS = {
         "https://upload.wikimedia.org/wikipedia/commons/5/57/En-us-cup.ogg"
       ],
       "page": "https://commons.wikimedia.org/wiki/File:En-us-cup.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "cut": {
+    "us": {
+      "file": "En-us-cut.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/53/En-us-cut.ogg/En-us-cut.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/5/53/En-us-cut.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-cut.ogg",
       "author": "Dvortygirl",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
@@ -748,6 +811,32 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "heel": {
+    "us": {
+      "file": "en-us-heel.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/39/En-us-heel.ogg/En-us-heel.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/3/39/En-us-heel.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-heel.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "hill": {
+    "us": {
+      "file": "en-us-hill.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cb/En-us-hill.ogg/En-us-hill.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/c/cb/En-us-hill.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-hill.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "horse": {
     "uk": {
       "file": "en-uk-a horse.ogg",
@@ -971,6 +1060,19 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "lock": {
+    "us": {
+      "file": "en-us-lock.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/73/En-us-lock.ogg/En-us-lock.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/7/73/En-us-lock.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-lock.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "lunch": {
     "uk": {
       "file": "En-uk-lunch.ogg",
@@ -1103,6 +1205,30 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "mouth": {
+    "uk": {
+      "file": "En-uk-mouth.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6f/En-uk-mouth.ogg/En-uk-mouth.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/6/6f/En-uk-mouth.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-uk-mouth.ogg",
+      "author": "Association Shtooka, Judith Franck",
+      "license": "CC BY 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en"
+    },
+    "us": {
+      "file": "en-us-mouth.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/52/En-us-mouth.ogg/En-us-mouth.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/5/52/En-us-mouth.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-mouth.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "nine": {
     "us": {
       "file": "en-us-nine.ogg",
@@ -1179,6 +1305,19 @@ const RECORDINGS = {
       "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en"
     }
   },
+  "pan": {
+    "us": {
+      "file": "en-us-pan.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cf/En-us-pan.ogg/En-us-pan.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/c/cf/En-us-pan.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-pan.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "panda": {
     "us": {
       "file": "En-us-panda.ogg",
@@ -1200,6 +1339,30 @@ const RECORDINGS = {
         "https://upload.wikimedia.org/wikipedia/commons/8/82/En-us-park.ogg"
       ],
       "page": "https://commons.wikimedia.org/wiki/File:En-us-park.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "pear": {
+    "uk": {
+      "file": "En-uk-pear.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d7/En-uk-pear.ogg/En-uk-pear.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d7/En-uk-pear.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-uk-pear.ogg",
+      "author": "Association Shtooka, Judith Franck",
+      "license": "CC BY 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en"
+    },
+    "us": {
+      "file": "en-us-pear.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6c/En-us-pear.ogg/En-us-pear.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/6/6c/En-us-pear.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-pear.ogg",
       "author": "Dvortygirl",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
@@ -1229,6 +1392,18 @@ const RECORDINGS = {
       "author": "Dvortygirl",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "pin": {
+    "us": {
+      "file": "En-us-pin.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cc/En-us-pin.ogg/En-us-pin.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/c/cc/En-us-pin.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-pin.ogg",
+      "author": "Unknown",
+      "license": "Public domain"
     }
   },
   "rabbit": {
@@ -1317,6 +1492,19 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "rock": {
+    "us": {
+      "file": "en-us-rock.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/25/En-us-rock.ogg/En-us-rock.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/2/25/En-us-rock.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-rock.ogg",
+      "author": "Dvortygirl (assumed)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "school": {
     "uk": {
       "file": "En-uk-school.ogg",
@@ -1354,6 +1542,31 @@ const RECORDINGS = {
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     }
   },
+  "sheep": {
+    "uk": {
+      "file": "En-uk-a sheep.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d0/En-uk-a_sheep.ogg/En-uk-a_sheep.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d0/En-uk-a_sheep.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-uk-a_sheep.ogg",
+      "author": "Association Shtooka, Judith Franck",
+      "license": "CC BY 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
+      "says": "a sheep"
+    },
+    "us": {
+      "file": "En-us-sheep.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/8/82/En-us-sheep.ogg/En-us-sheep.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/8/82/En-us-sheep.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-sheep.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
   "ship": {
     "uk": {
       "file": "en-uk-a ship.ogg",
@@ -1374,6 +1587,19 @@ const RECORDINGS = {
         "https://upload.wikimedia.org/wikipedia/commons/a/a9/En-us-ship.ogg"
       ],
       "page": "https://commons.wikimedia.org/wiki/File:En-us-ship.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "ships": {
+    "us": {
+      "file": "en-us-ships.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/fb/En-us-ships.ogg/En-us-ships.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/f/fb/En-us-ships.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-ships.ogg",
       "author": "Dvortygirl",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
@@ -1756,6 +1982,19 @@ const RECORDINGS = {
         "https://upload.wikimedia.org/wikipedia/commons/1/18/En-us-vest.ogg"
       ],
       "page": "https://commons.wikimedia.org/wiki/File:En-us-vest.ogg",
+      "author": "Dvortygirl",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "vote": {
+    "us": {
+      "file": "en-us-vote.ogg",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/9e/En-us-vote.ogg/En-us-vote.ogg.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/9/9e/En-us-vote.ogg"
+      ],
+      "page": "https://commons.wikimedia.org/wiki/File:En-us-vote.ogg",
       "author": "Dvortygirl",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
