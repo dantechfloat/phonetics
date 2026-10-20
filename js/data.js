@@ -18,6 +18,17 @@ const NOTATIONS = [
   },
 ];
 
+// Words some recordings say before the example word ("a cat", "the king").
+// The quiz never offers a sound that is in the lead-in word, so each one lists
+// its weak and strong forms. Keep in sync with LEAD_INS in
+// tools/build_recordings.py.
+const LEAD_INS = {
+  a: [{ dj: "ə", kk: "ə" }, { dj: "ei", kk: "e" }],
+  an: [{ dj: "ən", kk: "ən" }, { dj: "æn", kk: "æn" }],
+  the: [{ dj: "ðə", kk: "ðə" }, { dj: "ðiː", kk: "ði" }],
+  to: [{ dj: "tə", kk: "tə" }, { dj: "tuː", kk: "tu" }],
+};
+
 const CATEGORIES = [
   { id: "vowel", label: "Vowels", emoji: "🍎" },
   { id: "diphthong", label: "Double Vowels", emoji: "🎈" },

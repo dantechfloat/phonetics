@@ -108,6 +108,17 @@
     tokenize(transcription, n).flatMap((t) => [t, ...(notationById[n].alsoHas[t] || [])])
   );
 
+  /**
+   * Transcriptions of everything the word's recordings say, for each notation:
+   * the word itself plus any lead-in word ("a cat", "the king"). Either
+   * accent's clip can play as a fallback, so both are included.
+   */
+  function heardTranscriptions(word) {
+    const leads = Object.values(RECORDINGS[word.word.toLowerCase()] || {})
+      .flatMap((rec) => (rec.says ? rec.says.split(" ").slice(0, -1) : []));
+    return [word, ...leads.flatMap((lead) => LEAD_INS[lead] || [])];
+  }
+
   /** Transcription element with the target sound highlighted. */
   function transcriptionNode(transcription, target) {
     const span = el("span", { class: "word-ipa" }, "/");
@@ -384,7 +395,10 @@
     // word in either notation, and with symbols that look different from the
     // answer and from each other in both notations.
     const sameKind = PHONEMES.filter((p) => (p.category === "consonant") === (target.category === "consonant"));
-    const inWord = Object.fromEntries(NOTATIONS.map((n) => [n.id, soundsIn(word[n.id], n.id)]));
+    const heard = heardTranscriptions(word);
+    const inWord = Object.fromEntries(NOTATIONS.map((n) => [
+      n.id, new Set(heard.flatMap((t) => [...soundsIn(t[n.id], n.id)])),
+    ]));
     const chosen = [target];
     for (const p of shuffle(sameKind)) {
       if (chosen.length === 4) break;
