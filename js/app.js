@@ -100,6 +100,13 @@
     return tokens;
   }
 
+  // Tokens that also contain another sound, for picking quiz distractors.
+  // Strictly "ɚ" is an r-colored vowel and not /r/, but a child hears an r.
+  const ALSO_HAS = { kk: { "ɪr": ["r"], "ɛr": ["r"], "ʊr": ["r"], "ɚ": ["r"], "ɝ": ["r"] }, dj: {} };
+  const soundsIn = (transcription, notation) => new Set(
+    tokenize(transcription, notation).flatMap((t) => [t, ...(ALSO_HAS[notation][t] || [])])
+  );
+
   /** Transcription element with the target sound highlighted. */
   function transcriptionNode(transcription, target) {
     const span = el("span", { class: "word-ipa" }, "/");
@@ -354,8 +361,8 @@
     // answer and from each other in both notations.
     const sameKind = PHONEMES.filter((p) => (p.category === "consonant") === (target.category === "consonant"));
     const inWord = {
-      dj: new Set(tokenize(word.dj, "dj")),
-      kk: new Set(tokenize(word.kk, "kk")),
+      dj: soundsIn(word.dj, "dj"),
+      kk: soundsIn(word.kk, "kk"),
     };
     const chosen = [target];
     for (const p of shuffle(sameKind)) {
