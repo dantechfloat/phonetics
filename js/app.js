@@ -347,13 +347,13 @@
   };
 
   function startQuiz(mode) {
-    state.quiz = { mode, index: 0, score: 0, question: null, answered: null };
+    // Every pool has at least QUIZ_LENGTH sounds, so a round never repeats one.
+    const queue = shuffle(PHONEMES.filter(MODES[mode].pool)).slice(0, QUIZ_LENGTH);
+    state.quiz = { mode, queue, index: 0, score: 0, question: null, answered: null };
     nextQuestion();
   }
 
-  function makeQuestion(mode) {
-    const pool = PHONEMES.filter(MODES[mode].pool);
-    const target = pool[Math.floor(Math.random() * pool.length)];
+  function makeQuestion(target) {
     const word = target.words[Math.floor(Math.random() * target.words.length)];
 
     // Distractors: same kind of sound (vowel vs consonant), not present in the
@@ -376,7 +376,7 @@
 
   function nextQuestion() {
     const q = state.quiz;
-    q.question = makeQuestion(q.mode);
+    q.question = makeQuestion(q.queue[q.index]);
     q.answered = null;
     render();
     sayWord(q.question.word.word);
