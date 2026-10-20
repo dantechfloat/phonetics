@@ -32,7 +32,7 @@ When you add or change words, keep both transcriptions consistent with the phone
 
 ### Notation ↔ accent
 
-`NOTATIONS` lists each notation's `id` (also the key used on phonemes and words), `label`, `accent` (`uk` / `us`), `accentName` and `alsoHas` (symbols that also contain another sound, e.g. KK `ɚ` contains an audible r; used for quiz distractors). The header radio buttons are built from it, and app.js never hard-codes `dj` / `kk` apart from the default. `state.notation` drives everything: displayed symbols (`p[state.notation]`), transcriptions, and audio accent. Changing notation re-renders the view and any open detail dialog.
+`NOTATIONS` lists each notation's `id` (also the key used on phonemes and words), `label`, `accent` (`uk` / `us`), `accentName` and `alsoHas` (symbols that also contain another sound, e.g. KK `ɚ` contains an audible r; used for quiz distractors). The header radio buttons are built from it, and app.js never hard-codes `dj` / `kk` apart from the default. `state.notation` drives everything: displayed symbols (`p[state.notation]`), transcriptions, and audio accent. Changing notation re-renders the view and any open detail dialog. The dialog has its own notation switch, because `showModal()` makes the header switch inert.
 
 ### Rendering (`js/app.js`)
 

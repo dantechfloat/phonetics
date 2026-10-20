@@ -291,6 +291,26 @@ dialog::backdrop { background: rgba(43, 45, 66, 0.55); }
 .detail-both { color: var(--ink-soft); font-weight: 700; margin: 4px 0 8px; }
 .detail-both .ipa { color: var(--ink); }
 
+.detail-notation {
+  display: inline-flex;
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 4px;
+  margin: 0 8px 10px 0;
+}
+.detail-notation button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.detail-notation button[aria-checked="true"] {
+  background: var(--ink);
+  color: #fff;
+}
+
 .play-btn {
   border: 0;
   background: var(--brand);

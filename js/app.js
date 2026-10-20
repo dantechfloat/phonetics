@@ -282,6 +282,16 @@
         el("p", { class: "detail-both" }, NOTATIONS.flatMap((n, i) => [
           `${i ? "   |   " : ""}${n.label}: `, el("span", { class: "ipa", text: wrap(p[n.id]) }),
         ])),
+        // The header switch is inert behind the modal, so the dialog has its own.
+        el("div", { class: "detail-notation", role: "radiogroup", "aria-label": "Phonetic notation" },
+          NOTATIONS.map((n) => el("button", {
+            type: "button", role: "radio",
+            "aria-checked": String(n.id === state.notation),
+            onclick: () => {
+              setNotation(n.id);
+              detailContent.querySelector(`.detail-notation [aria-checked="true"]`).focus();
+            },
+          }, `${n.label} (${n.accentName})`))),
         el("button", {
           type: "button", class: "play-btn",
           onclick: () => sayWord(p.words[0].word),
