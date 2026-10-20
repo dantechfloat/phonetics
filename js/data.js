@@ -11,6 +11,9 @@
  * "highlight" optionally lists more words in the sentence that have the
  * sound (the example words are highlighted anyway).
  *
+ * "spellings" lists common ways to write the sound, each as
+ * [letters, example word]; "_" marks a split spelling like "a_e" in "cake".
+ *
  * "name" is a speakable name for the sound ("short i"), used for screen
  * readers (which read IPA symbols poorly) and to tell apart sounds that
  * share a symbol in one notation.
@@ -62,6 +65,7 @@ const PHONEMES = [
     ],
     sentence: "The big pig drinks milk.",
     highlight: ["big", "drinks"],
+    spellings: [["i", "pig"], ["y", "gym"]],
   },
   {
     id: "short-e", name: "short e", category: "vowel", group: "short", dj: "e", kk: "ɛ",
@@ -73,6 +77,7 @@ const PHONEMES = [
     ],
     sentence: "Ten red eggs are on the bed.",
     highlight: ["ten"],
+    spellings: [["e", "bed"], ["ea", "bread"]],
   },
   {
     id: "short-ae", name: "short a", category: "vowel", group: "short", dj: "æ", kk: "æ",
@@ -84,6 +89,7 @@ const PHONEMES = [
     ],
     sentence: "The cat has a black hat.",
     highlight: ["has", "black"],
+    spellings: [["a", "cat"]],
   },
   {
     id: "short-uh", name: "short uh", category: "vowel", group: "short", dj: "ʌ", kk: "ʌ",
@@ -94,6 +100,7 @@ const PHONEMES = [
       { word: "duck", emoji: "🦆", dj: "dʌk", kk: "dʌk" },
     ],
     sentence: "The duck sits in the sun.",
+    spellings: [["u", "cup"], ["o", "mother"]],
   },
   {
     id: "short-o", name: "short o", category: "vowel", group: "short", dj: "ɔ", kk: "ɑ",
@@ -104,6 +111,7 @@ const PHONEMES = [
       { word: "sock", emoji: "🧦", dj: "sɔk", kk: "sɑk" },
     ],
     sentence: "My sock is in the box.",
+    spellings: [["o", "hot"]],
   },
   {
     id: "short-u", name: "short oo", category: "vowel", group: "short", dj: "u", kk: "ʊ",
@@ -115,6 +123,7 @@ const PHONEMES = [
     ],
     sentence: "Look at the good book.",
     highlight: ["look", "good"],
+    spellings: [["oo", "book"], ["u", "put"]],
   },
   {
     id: "schwa", name: "lazy uh", category: "vowel", group: "short", dj: "ə", kk: "ə",
@@ -126,6 +135,7 @@ const PHONEMES = [
     ],
     sentence: "A panda eats a banana.",
     highlight: ["a"],
+    spellings: [["a", "banana"], ["o", "lemon"]],
   },
   {
     id: "schwa-r", name: "lazy er", category: "vowel", group: "short", dj: "ə", kk: "ɚ",
@@ -137,6 +147,7 @@ const PHONEMES = [
       { word: "teacher", emoji: "🧑‍🏫", dj: "ˈtiːtʃə", kk: "ˈtitʃɚ" },
     ],
     sentence: "The tiger drinks water.",
+    spellings: [["er", "teacher"], ["or", "doctor"]],
   },
 
   // ---------- Long vowels ----------
@@ -150,6 +161,7 @@ const PHONEMES = [
     ],
     sentence: "I see three green trees.",
     highlight: ["see", "three", "green"],
+    spellings: [["ee", "tree"], ["ea", "sea"], ["e_e", "these"], ["e", "me"]],
   },
   {
     id: "long-ah", name: "long ah", category: "vowel", group: "long", dj: "ɑː", kk: "ɑ",
@@ -160,6 +172,7 @@ const PHONEMES = [
       { word: "park", emoji: "🏞️", dj: "pɑːk", kk: "pɑrk" },
     ],
     sentence: "I see a star from the car.",
+    spellings: [["ar", "car"], ["a", "father"]],
   },
   {
     id: "long-aw", name: "long aw", category: "vowel", group: "long", dj: "ɔː", kk: "ɔ",
@@ -170,6 +183,7 @@ const PHONEMES = [
       { word: "fork", emoji: "🍴", dj: "fɔːk", kk: "fɔrk" },
     ],
     sentence: "The horse plays with a ball.",
+    spellings: [["or", "fork"], ["all", "ball"], ["aw", "saw"]],
   },
   {
     id: "long-oo", name: "long oo", category: "vowel", group: "long", dj: "uː", kk: "u",
@@ -180,6 +194,7 @@ const PHONEMES = [
       { word: "shoe", emoji: "👟", dj: "ʃuː", kk: "ʃu" },
     ],
     sentence: "The moon is over the school.",
+    spellings: [["oo", "moon"], ["u_e", "rule"], ["oe", "shoe"]],
   },
   {
     id: "long-er", name: "long er", category: "vowel", group: "long", dj: "əː", kk: "ɝ",
@@ -190,6 +205,7 @@ const PHONEMES = [
       { word: "nurse", emoji: "🧑‍⚕️", dj: "nəːs", kk: "nɝs" },
     ],
     sentence: "The girl sees a bird.",
+    spellings: [["ir", "bird"], ["ur", "nurse"], ["er", "her"]],
   },
 
   // ---------- Diphthongs ----------
@@ -202,6 +218,7 @@ const PHONEMES = [
       { word: "rain", emoji: "🌧️", dj: "rein", kk: "ren" },
     ],
     sentence: "I eat cake on the train.",
+    spellings: [["a_e", "cake"], ["ai", "rain"], ["ay", "day"]],
   },
   {
     id: "di-eye", name: "eye", category: "diphthong", group: "diphthong", dj: "ai", kk: "aɪ",
@@ -213,6 +230,7 @@ const PHONEMES = [
     ],
     sentence: "I ride my bike and fly a kite.",
     highlight: ["I", "ride", "my", "fly"],
+    spellings: [["i_e", "kite"], ["igh", "night"], ["y", "fly"]],
   },
   {
     id: "di-oy", name: "oy", category: "diphthong", group: "diphthong", dj: "ɔi", kk: "ɔɪ",
@@ -223,6 +241,7 @@ const PHONEMES = [
       { word: "coin", emoji: "🪙", dj: "kɔin", kk: "kɔɪn" },
     ],
     sentence: "The boy has a toy.",
+    spellings: [["oy", "boy"], ["oi", "coin"]],
   },
   {
     id: "di-ow", name: "ow", category: "diphthong", group: "diphthong", dj: "au", kk: "aʊ",
@@ -233,6 +252,7 @@ const PHONEMES = [
       { word: "mouse", emoji: "🐭", dj: "maus", kk: "maʊs" },
     ],
     sentence: "A mouse is in the house.",
+    spellings: [["ow", "cow"], ["ou", "house"]],
   },
   {
     id: "di-oh", name: "oh", category: "diphthong", group: "diphthong", dj: "ou", kk: "o",
@@ -243,6 +263,7 @@ const PHONEMES = [
       { word: "nose", emoji: "👃", dj: "nouz", kk: "noz" },
     ],
     sentence: "Snow is on my nose.",
+    spellings: [["o_e", "nose"], ["oa", "boat"], ["ow", "snow"]],
   },
   {
     id: "di-ear", name: "ear", category: "diphthong", group: "diphthong", dj: "iə", kk: "ɪr",
@@ -253,6 +274,7 @@ const PHONEMES = [
       { word: "year", emoji: "📅", dj: "jiə", kk: "jɪr" },
     ],
     sentence: "The deer has big ears.",
+    spellings: [["ear", "ear"], ["eer", "deer"]],
   },
   {
     id: "di-air", name: "air", category: "diphthong", group: "diphthong", dj: "ɛə", kk: "ɛr",
@@ -263,6 +285,7 @@ const PHONEMES = [
       { word: "hair", emoji: "💇", dj: "hɛə", kk: "hɛr" },
     ],
     sentence: "The bear sits on a chair.",
+    spellings: [["air", "hair"], ["ear", "bear"], ["are", "care"]],
   },
   {
     id: "di-oor", name: "oor", category: "diphthong", group: "diphthong", dj: "uə", kk: "ʊr",
@@ -274,6 +297,7 @@ const PHONEMES = [
       { word: "tourist", emoji: "📸", dj: "ˈtuərist", kk: "ˈtʊrɪst" },
     ],
     sentence: "Are you sure about the tour?",
+    spellings: [["our", "tour"], ["ure", "sure"]],
   },
 
   // ---------- Consonants: partner pairs ----------
@@ -287,6 +311,7 @@ const PHONEMES = [
     ],
     sentence: "The pig has a pink pen.",
     highlight: ["pink"],
+    spellings: [["p", "pen"], ["pp", "apple"]],
   },
   {
     id: "c-b", name: "b", category: "consonant", group: "pair", voicing: "voiced", pair: "c-p", dj: "b", kk: "b",
@@ -298,6 +323,7 @@ const PHONEMES = [
     ],
     sentence: "Ben has a big blue ball.",
     highlight: ["Ben", "big", "blue"],
+    spellings: [["b", "bed"], ["bb", "rabbit"]],
   },
   {
     id: "c-t", name: "t", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-d", dj: "t", kk: "t",
@@ -309,6 +335,7 @@ const PHONEMES = [
     ],
     sentence: "Tom has ten toys.",
     highlight: ["Tom", "toys"],
+    spellings: [["t", "ten"], ["tt", "letter"]],
   },
   {
     id: "c-d", name: "d", category: "consonant", group: "pair", voicing: "voiced", pair: "c-t", dj: "d", kk: "d",
@@ -319,6 +346,7 @@ const PHONEMES = [
       { word: "door", emoji: "🚪", dj: "dɔː", kk: "dɔr" },
     ],
     sentence: "The dog is at the door.",
+    spellings: [["d", "dog"], ["dd", "ladder"]],
   },
   {
     id: "c-k", name: "k", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-g", dj: "k", kk: "k",
@@ -330,6 +358,7 @@ const PHONEMES = [
     ],
     sentence: "Kate has a key and a cake.",
     highlight: ["Kate"],
+    spellings: [["c", "cat"], ["k", "key"], ["ck", "duck"]],
   },
   {
     id: "c-g", name: "g", category: "consonant", group: "pair", voicing: "voiced", pair: "c-k", dj: "g", kk: "g",
@@ -340,6 +369,7 @@ const PHONEMES = [
       { word: "egg", emoji: "🥚", dj: "eg", kk: "ɛg" },
     ],
     sentence: "The goat has a gift.",
+    spellings: [["g", "goat"], ["gg", "egg"]],
   },
   {
     id: "c-f", name: "f", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-v", dj: "f", kk: "f",
@@ -350,6 +380,7 @@ const PHONEMES = [
       { word: "leaf", emoji: "🍃", dj: "liːf", kk: "lif" },
     ],
     sentence: "The fox sees a fish.",
+    spellings: [["f", "fish"], ["ph", "phone"]],
   },
   {
     id: "c-v", name: "v", category: "consonant", group: "pair", voicing: "voiced", pair: "c-f", dj: "v", kk: "v",
@@ -361,6 +392,7 @@ const PHONEMES = [
     ],
     sentence: "Five vans are very big.",
     highlight: ["very"],
+    spellings: [["v", "van"], ["ve", "five"]],
   },
   {
     id: "c-th", name: "quiet th", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-dh", dj: "θ", kk: "θ",
@@ -372,6 +404,7 @@ const PHONEMES = [
     ],
     sentence: "Thank you for the three gifts.",
     highlight: ["thank"],
+    spellings: [["th", "three"]],
   },
   {
     id: "c-dh", name: "buzzy th", category: "consonant", group: "pair", voicing: "voiced", pair: "c-th", dj: "ð", kk: "ð",
@@ -382,6 +415,7 @@ const PHONEMES = [
       { word: "father", emoji: "👨", dj: "ˈfɑːðə", kk: "ˈfɑðɚ" },
     ],
     sentence: "This is my mother and father.",
+    spellings: [["th", "this"]],
   },
   {
     id: "c-s", name: "s", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-z", dj: "s", kk: "s",
@@ -393,6 +427,7 @@ const PHONEMES = [
     ],
     sentence: "Sam sees the sun from the bus.",
     highlight: ["Sam", "sees"],
+    spellings: [["s", "sun"], ["ss", "kiss"], ["c", "ice"]],
   },
   {
     id: "c-z", name: "z", category: "consonant", group: "pair", voicing: "voiced", pair: "c-s", dj: "z", kk: "z",
@@ -403,6 +438,7 @@ const PHONEMES = [
       { word: "nose", emoji: "👃", dj: "nouz", kk: "noz" },
     ],
     sentence: "I see a zebra at the zoo.",
+    spellings: [["z", "zoo"], ["zz", "buzz"], ["s", "nose"]],
   },
   {
     id: "c-sh", name: "sh", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-zh", dj: "ʃ", kk: "ʃ",
@@ -414,6 +450,7 @@ const PHONEMES = [
     ],
     sentence: "She sees a fish from the ship.",
     highlight: ["she"],
+    spellings: [["sh", "ship"], ["s", "sure"]],
   },
   {
     id: "c-zh", name: "zh", category: "consonant", group: "pair", voicing: "voiced", pair: "c-sh", dj: "ʒ", kk: "ʒ",
@@ -424,6 +461,7 @@ const PHONEMES = [
       { word: "measure", emoji: "📏", dj: "ˈmeʒə", kk: "ˈmɛʒɚ" },
     ],
     sentence: "We find treasure on television.",
+    spellings: [["s", "treasure"], ["si", "television"]],
   },
   {
     id: "c-ch", name: "ch", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-j", dj: "tʃ", kk: "tʃ",
@@ -434,6 +472,7 @@ const PHONEMES = [
       { word: "lunch", emoji: "🍱", dj: "lʌntʃ", kk: "lʌntʃ" },
     ],
     sentence: "I eat cheese for lunch.",
+    spellings: [["ch", "cheese"], ["tch", "watch"]],
   },
   {
     id: "c-j", name: "j", category: "consonant", group: "pair", voicing: "voiced", pair: "c-ch", dj: "dʒ", kk: "dʒ",
@@ -444,6 +483,7 @@ const PHONEMES = [
       { word: "orange", emoji: "🍊", dj: "ˈɔrindʒ", kk: "ˈɔrɪndʒ" },
     ],
     sentence: "I like jam and orange juice.",
+    spellings: [["j", "jam"], ["ge", "orange"], ["g", "giraffe"]],
   },
 
   // ---------- Consonants: others ----------
@@ -456,6 +496,7 @@ const PHONEMES = [
       { word: "house", emoji: "🏠", dj: "haus", kk: "haʊs" },
     ],
     sentence: "A horse is in the house.",
+    spellings: [["h", "hat"], ["wh", "who"]],
   },
   {
     id: "c-m", name: "m", category: "consonant", group: "other", voicing: "voiced", dj: "m", kk: "m",
@@ -467,6 +508,7 @@ const PHONEMES = [
     ],
     sentence: "My mouse drinks milk.",
     highlight: ["my"],
+    spellings: [["m", "moon"], ["mm", "summer"]],
   },
   {
     id: "c-n", name: "n", category: "consonant", group: "other", voicing: "voiced", dj: "n", kk: "n",
@@ -478,6 +520,7 @@ const PHONEMES = [
     ],
     sentence: "Nine nuts are on my nose.",
     highlight: ["on"],
+    spellings: [["n", "nose"], ["kn", "knee"]],
   },
   {
     id: "c-ng", name: "ng", category: "consonant", group: "other", voicing: "voiced", dj: "ŋ", kk: "ŋ",
@@ -488,6 +531,7 @@ const PHONEMES = [
       { word: "sing", emoji: "🎤", dj: "siŋ", kk: "sɪŋ" },
     ],
     sentence: "The king can sing.",
+    spellings: [["ng", "king"], ["n", "pink"]],
   },
   {
     id: "c-l", name: "l", category: "consonant", group: "other", voicing: "voiced", dj: "l", kk: "l",
@@ -499,6 +543,7 @@ const PHONEMES = [
     ],
     sentence: "The lion plays with a leaf.",
     highlight: ["plays"],
+    spellings: [["l", "lion"], ["ll", "ball"]],
   },
   {
     id: "c-r", name: "r", category: "consonant", group: "other", voicing: "voiced", dj: "r", kk: "r",
@@ -510,6 +555,7 @@ const PHONEMES = [
     ],
     sentence: "The red rabbit runs in the rain.",
     highlight: ["runs"],
+    spellings: [["r", "red"], ["wr", "write"]],
   },
   {
     id: "c-w", name: "w", category: "consonant", group: "other", voicing: "voiced", dj: "w", kk: "w",
@@ -521,6 +567,7 @@ const PHONEMES = [
     ],
     sentence: "We wash the window with water.",
     highlight: ["we", "wash", "with"],
+    spellings: [["w", "web"], ["wh", "white"]],
   },
   {
     id: "c-y", name: "y", category: "consonant", group: "other", voicing: "voiced", dj: "j", kk: "j",
@@ -531,6 +578,7 @@ const PHONEMES = [
       { word: "yo-yo", emoji: "🪀", dj: "ˈjoujou", kk: "ˈjojo" },
     ],
     sentence: "Yes, the yo-yo is yellow.",
+    spellings: [["y", "yes"]],
   },
 ];
 

@@ -112,6 +112,14 @@ for (const p of PHONEMES) {
     error(`${where}: only "pair" group sounds can have a pair`);
   }
 
+  for (const [letters, word] of p.spellings || []) {
+    const [first, second] = letters.split("_");
+    const found = second
+      ? new RegExp(`${first}[^aeiou]+${second}`).test(word)
+      : word.includes(first);
+    if (!found) error(`${where}: spelling "${letters}" is not in its example "${word}"`);
+  }
+
   const sentenceWords = (p.sentence || "").toLowerCase().split(/\s+/).map((w) => w.replace(/[^a-z-]/g, ""));
   for (const word of p.highlight || []) {
     if (!sentenceWords.includes(word.toLowerCase())) error(`${where}: highlight word "${word}" is not in the sentence`);

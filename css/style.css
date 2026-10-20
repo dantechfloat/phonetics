@@ -417,6 +417,23 @@ dialog::backdrop { background: rgba(43, 45, 66, 0.55); }
 }
 .note { color: var(--ink-soft); font-size: 0.95rem; margin: 8px 0 0; }
 
+.spelling-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.spelling-list li {
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 700;
+}
+.spelling-list strong { font-size: 1.15rem; font-weight: 900; }
+.spelling-word mark { padding: 0 1px; }
+
 .word-list {
   list-style: none;
   padding: 0;

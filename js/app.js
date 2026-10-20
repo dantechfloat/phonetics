@@ -157,6 +157,21 @@
     return span;
   }
 
+  /**
+   * Example word with a spelling's letters marked: ("ee", "tree") -> tr<mark>ee</mark>.
+   * A split spelling like "a_e" marks both parts around the consonants: c<mark>a</mark>k<mark>e</mark>.
+   */
+  function spellingNode(letters, word) {
+    const [first, second] = letters.split("_");
+    const match = second
+      ? word.match(new RegExp(`^(.*?)(${first})([^aeiou]+)(${second})(.*)$`))
+      : word.match(new RegExp(`^(.*?)(${first})(.*)$`));
+    const span = el("span", { class: "spelling-word" });
+    if (!match) span.append(word);
+    else match.slice(1).forEach((part, i) => span.append(i % 2 ? el("mark", { text: part }) : part));
+    return span;
+  }
+
   // ---------- Audio ----------
   async function sayWord(word) {
     const source = await SoundPlayer.playWord(word, { accent: accent(), slow: state.slow });
@@ -441,6 +456,12 @@
         sameSymbol(p).length ? el("p", { class: "note", text:
           `💡 ${notation().label} writes ${[p, ...sameSymbol(p)].map((x) => `the ${x.name} sound`).join(" and ")} with the same symbol, ${wrap(target)}.` }) : null,
       ]),
+      p.spellings ? el("section", { class: "detail-section" }, [
+        el("h3", { text: "✏️ Ways to write it" }),
+        el("ul", { class: "spelling-list" }, p.spellings.map(([letters, word]) =>
+          el("li", {}, [el("strong", { text: letters }), " as in ", spellingNode(letters, word)])
+        )),
+      ]) : null,
       el("section", { class: "detail-section" }, [
         el("h3", { text: "🖼️ Words with this sound" }),
         el("ul", { class: "word-list" }, wordItems),
