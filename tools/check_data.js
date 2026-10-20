@@ -158,6 +158,9 @@ for (const word of words) {
     if (!Array.isArray(rec[accent].urls) || !rec[accent].urls.length) {
       error(`RECORDINGS["${word}"].${accent}: no urls`);
     }
+    for (const key of ["file", "page", "author", "license"]) {
+      if (!rec[accent][key]) error(`RECORDINGS["${word}"].${accent}: missing ${key} (needed for the credits)`);
+    }
     const says = rec[accent].says;
     if (says) {
       phrases.push(`${word} (${accent.toUpperCase()}: "${says}")`);

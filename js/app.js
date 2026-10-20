@@ -374,6 +374,37 @@
     if (e.target === dialog) closeDetail();
   });
 
+  // ---------- Recording credits ----------
+  const creditsDialog = document.getElementById("credits");
+
+  function openCredits() {
+    const accentLabel = (a) => `${accentNames[a] || a} voice`;
+    const items = Object.entries(RECORDINGS)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .flatMap(([word, byAccent]) => Object.entries(byAccent).map(([acc, rec]) =>
+        el("li", {}, [
+          el("strong", { text: word }), ` (${accentLabel(acc)}): `,
+          el("a", { href: rec.page, target: "_blank", rel: "noopener", text: rec.file }),
+          ` by ${rec.author}, `,
+          rec.licenseUrl
+            ? el("a", { href: rec.licenseUrl, target: "_blank", rel: "noopener", text: rec.license })
+            : rec.license,
+        ])
+      ));
+    document.getElementById("credits-content").replaceChildren(
+      el("button", { type: "button", class: "close-btn", "aria-label": "Close", onclick: () => creditsDialog.close(), text: "✕" }),
+      el("h2", { class: "credits-title", id: "credits-title", text: "🎙️ Recording credits" }),
+      el("p", { class: "note", text: "Thank you to everyone who recorded these words for Wikimedia Commons! Each file is used under the license shown. Follow a file name to see its page." }),
+      el("ul", { class: "credits-list" }, items),
+    );
+    creditsDialog.showModal();
+  }
+
+  document.getElementById("credits-btn").addEventListener("click", openCredits);
+  creditsDialog.addEventListener("click", (e) => {
+    if (e.target === creditsDialog) creditsDialog.close();
+  });
+
   // ---------- Sound Game ----------
   const MODES = {
     vowel: { label: "Vowel Sounds", emoji: "🍎", pool: (p) => p.category !== "consonant" },
