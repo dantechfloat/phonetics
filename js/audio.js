@@ -99,14 +99,14 @@ const SoundPlayer = (() => {
     const recordings = RECORDINGS[word.toLowerCase()] || {};
     const other = accent === "uk" ? "us" : "uk";
 
-    if (recordings[accent] && (await playUrls(recordings[accent], slow, token))) return "recorded";
+    if (recordings[accent] && (await playUrls(recordings[accent].urls, slow, token))) return "recorded";
     if (token !== playToken) return "skipped";
 
     if (hasSpeech && voicesFor(accent).length) {
       speak(word, { accent, slow });
       return "computer";
     }
-    if (recordings[other] && (await playUrls(recordings[other], slow, token))) return "recorded-other";
+    if (recordings[other] && (await playUrls(recordings[other].urls, slow, token))) return "recorded-other";
     if (token !== playToken) return "skipped";
 
     speak(word, { accent, slow });
