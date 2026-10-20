@@ -279,7 +279,10 @@
   function renderCategory(category) {
     const items = PHONEMES.filter((p) => p.category === category);
     const groups = [...new Set(items.map((p) => p.group))];
-    view.append(el("p", { class: "section-intro", text: INTROS[category] }));
+    view.append(el("div", { class: "section-head" }, [
+      el("p", { class: "section-intro", text: INTROS[category] }),
+      el("button", { type: "button", class: "link-btn print-btn", onclick: () => window.print() }, "🖨️ Print these cards"),
+    ]));
 
     for (const group of groups) {
       const inGroup = items.filter((p) => p.group === group);

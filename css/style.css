@@ -181,6 +181,7 @@ main {
   outline: none;
 }
 .section-intro { color: var(--ink-soft); font-weight: 700; margin: 8px 0 4px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 .group-title {
   font-size: 1.35rem;
   font-weight: 900;
@@ -652,6 +653,24 @@ mark {
   .detail-inner { padding: 18px; }
   .detail-symbol { font-size: 3.2rem; }
   .option { font-size: 2rem; }
+}
+
+/* ---------- Printing: the current tab's cards as flashcards ---------- */
+@media print {
+  body { background: #fff; font-size: 14pt; }
+  .site-header { background: none; padding: 0 0 8pt; }
+  .controls, .tabs, .site-footer, .toast, .print-btn, .section-intro, .hint-box, dialog { display: none !important; }
+  main { max-width: none; padding: 0; }
+  .card-grid, .pair-grid { grid-template-columns: repeat(4, 1fr); gap: 10pt; }
+  .pair { display: contents; }
+  .card, .tricky, .compare-table, .quiz {
+    box-shadow: none;
+    border: 2pt solid var(--c, var(--line));
+    break-inside: avoid;
+  }
+  .card:hover { transform: none; }
+  .group-title { break-after: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 @media (prefers-reduced-motion: reduce) {
