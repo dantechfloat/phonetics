@@ -46,6 +46,8 @@
   const notation = () => notationById[state.notation];
   const accent = () => notation().accent;
   const sym = (p) => p[state.notation];
+  /** Other sounds written with the same symbol in the current notation. */
+  const sameSymbol = (p) => PHONEMES.filter((x) => x !== p && sym(x) === sym(p));
   const wrap = (s) => `/${s}/`;
 
   // ---------- Small helpers ----------
@@ -230,6 +232,8 @@
       onclick: () => openDetail(p.id),
     }, [
       el("span", { class: "card-symbol", text: wrap(sym(p)) }),
+      // Tell apart cards that look the same in this notation (DJ /ə/, KK /ɑ/).
+      sameSymbol(p).length ? el("span", { class: "card-name", "aria-hidden": "true", text: p.name }) : null,
       el("span", { class: "card-emoji", "aria-hidden": "true", text: first.emoji }),
       el("span", { class: "card-word", text: first.word }),
       p.voicing ? el("span", { class: "badge", text: p.voicing === "voiced" ? "🐝 Buzzy" : "🤫 Quiet" }) : null,
@@ -347,6 +351,8 @@
           ? "🐝 Buzzy sound: your throat shakes when you say it."
           : "🤫 Quiet sound: only air comes out, no voice." }) : null,
         p.note ? el("p", { class: "note", text: `💡 ${p.note}` }) : null,
+        sameSymbol(p).length ? el("p", { class: "note", text:
+          `💡 ${notation().label} writes ${[p, ...sameSymbol(p)].map((x) => `the ${x.name} sound`).join(" and ")} with the same symbol, ${wrap(target)}.` }) : null,
       ]),
       el("section", { class: "detail-section" }, [
         el("h3", { text: "🖼️ Words with this sound" }),

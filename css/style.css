@@ -226,6 +226,7 @@ main {
   padding: 2px 12px;
   text-align: center;
 }
+.card-name { font-size: 0.85rem; font-weight: 800; color: var(--ink-soft); margin-top: 2px; }
 .card-emoji { font-size: 2rem; line-height: 1.2; margin-top: 6px; }
 .card-word { font-weight: 800; font-size: 1.1rem; }
 .badge {
