@@ -7,6 +7,9 @@ Wikimedia Commons URLs (an MP3 transcode for wide browser support, plus
 the original file as a backup) and each file's author and license, which
 the page lists in its Credits dialog.
 
+Local recordings in audio/<accent>/<word>.mp3 (e.g. audio/uk/ball.mp3)
+are used instead of Commons when they exist; see audio/README.md.
+
 Some clips say a short phrase such as "a cat" instead of the bare word.
 Those are kept (a real voice is better than none) and their entry gets a
 "says" field, so the quiz can avoid offering a sound that is audible in
@@ -28,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA_JS = ROOT / "js" / "data.js"
 OUT_JS = ROOT / "js" / "recordings.js"
+AUDIO_DIR = ROOT / "audio"
 
 API = "https://en.wiktionary.org/w/api.php"
 USER_AGENT = "SoundExplorer/1.0 (educational phonetics page)"
@@ -159,6 +163,33 @@ def file_info(titles):
     return infos
 
 
+def local_recordings(words):
+    """(word, accent) -> recording entry for files in audio/<accent>/<word>.mp3.
+
+    Credits come from audio/credits.json: {"default": {...}, "uk/ball.mp3": {...}},
+    each with "author", "license" and optionally "licenseUrl".
+    """
+    credits_file = AUDIO_DIR / "credits.json"
+    credits = json.loads(credits_file.read_text(encoding="utf-8")) if credits_file.exists() else {}
+    found = {}
+    for word in words:
+        for acc in ACCENT_PREFIXES:
+            rel = f"{acc}/{word}.mp3"
+            if not (AUDIO_DIR / rel).exists():
+                continue
+            credit = credits.get(rel) or credits.get("default")
+            if not credit:
+                print(f"Warning: no credit for audio/{rel} in audio/credits.json")
+                credit = {}
+            rec = {"file": f"audio/{rel}", "urls": [f"audio/{rel}"], "page": f"audio/{rel}",
+                   "author": credit.get("author", "Unknown"),
+                   "license": credit.get("license", "Unknown")}
+            if credit.get("licenseUrl"):
+                rec["licenseUrl"] = credit["licenseUrl"]
+            found[word, acc] = rec
+    return found
+
+
 def mp3_transcode(url):
     """Commons serves MP3 transcodes of non-MP3 audio at a fixed path."""
     if url.lower().endswith(".mp3"):
@@ -191,12 +222,15 @@ def main():
             chosen[word][acc] = title
             infos[title] = found[title]
 
+    local = local_recordings(words)
     recordings = {}
     phrases = []
     for word, picks in chosen.items():
         entry = {}
         for acc, title in picks.items():
-            if title and title in infos:
+            if (word, acc) in local:
+                entry[acc] = local[word, acc]
+            elif title and title in infos:
                 info = infos[title]
                 rec = {"file": title.removeprefix("File:"),
                        "urls": [mp3_transcode(info["url"]), info["url"]],
@@ -234,6 +268,7 @@ def main():
         lacking = [w for w in words if acc not in recordings.get(w, {})]
         print(f"Missing {acc.upper()}:", ", ".join(lacking) or "none")
     print("Phrase clips (not the bare word):", ", ".join(phrases) or "none")
+    print("Local recordings:", ", ".join(f"{w} ({a.upper()})" for w, a in sorted(local)) or "none")
 
 
 if __name__ == "__main__":
