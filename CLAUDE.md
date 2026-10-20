@@ -48,4 +48,4 @@ When you add or change words, keep both transcriptions consistent with the phone
 
 ### Styling
 
-`css/style.css` uses CSS custom properties on `:root`. Cards are colored by the `data-cat` / `data-voicing` attributes (vowel, diphthong, voiced, voiceless).
+`css/style.css` uses CSS custom properties on `:root`. Cards are colored by the `data-cat` / `data-voicing` attributes (vowel, diphthong, voiced, voiceless). Bright colors are only for borders and backgrounds; text uses the darker `--*-ink` / `--brand-strong` tokens, which meet WCAG AA contrast.
