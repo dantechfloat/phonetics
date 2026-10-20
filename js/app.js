@@ -9,6 +9,8 @@
   const QUIZ_LENGTH = 10;
 
   const byId = Object.fromEntries(PHONEMES.map((p) => [p.id, p]));
+  const notationById = Object.fromEntries(NOTATIONS.map((n) => [n.id, n]));
+  const accentNames = Object.fromEntries(NOTATIONS.map((n) => [n.accent, n.accentName]));
 
   // ---------- Saved settings (best effort; the page works without storage) ----------
   function loadSettings() {
@@ -33,7 +35,7 @@
 
   const saved = loadSettings();
   const state = {
-    notation: saved.notation === "dj" ? "dj" : "kk",
+    notation: notationById[saved.notation] ? saved.notation : "kk",
     slow: !!saved.slow,
     tab: ["vowel", "diphthong", "consonant", "quiz"].includes(saved.tab) ? saved.tab : "vowel",
     best: saved.best || {},
@@ -41,7 +43,8 @@
     quiz: null,
   };
 
-  const accent = () => (state.notation === "dj" ? "uk" : "us");
+  const notation = () => notationById[state.notation];
+  const accent = () => notation().accent;
   const sym = (p) => p[state.notation];
   const wrap = (s) => `/${s}/`;
 
@@ -82,10 +85,9 @@
 
   // ---------- Splitting a transcription into sounds ----------
   // Longest symbols first, so "tʃ" wins over "t" and "ai" wins over "a".
-  const symbolLists = {
-    dj: [...new Set(PHONEMES.map((p) => p.dj))].sort((a, b) => b.length - a.length),
-    kk: [...new Set(PHONEMES.map((p) => p.kk))].sort((a, b) => b.length - a.length),
-  };
+  const symbolLists = Object.fromEntries(NOTATIONS.map((n) => [
+    n.id, [...new Set(PHONEMES.map((p) => p[n.id]))].sort((a, b) => b.length - a.length),
+  ]));
 
   function tokenize(transcription, notation) {
     const symbols = symbolLists[notation];
@@ -100,11 +102,10 @@
     return tokens;
   }
 
-  // Tokens that also contain another sound, for picking quiz distractors.
-  // Strictly "ɚ" is an r-colored vowel and not /r/, but a child hears an r.
-  const ALSO_HAS = { kk: { "ɪr": ["r"], "ɛr": ["r"], "ʊr": ["r"], "ɚ": ["r"], "ɝ": ["r"] }, dj: {} };
-  const soundsIn = (transcription, notation) => new Set(
-    tokenize(transcription, notation).flatMap((t) => [t, ...(ALSO_HAS[notation][t] || [])])
+  // Sounds in a transcription, including ones hidden inside a bigger symbol
+  // (NOTATIONS alsoHas), for picking quiz distractors.
+  const soundsIn = (transcription, n) => new Set(
+    tokenize(transcription, n).flatMap((t) => [t, ...(notationById[n].alsoHas[t] || [])])
   );
 
   /** Transcription element with the target sound highlighted. */
@@ -121,7 +122,10 @@
   async function sayWord(word) {
     const source = await SoundPlayer.playWord(word, { accent: accent(), slow: state.slow });
     if (source === "recorded") toast("🎙️ Real voice");
-    else if (source === "recorded-other") toast(`🎙️ Real voice (${accent() === "uk" ? "American" : "British"})`);
+    else if (source === "recorded-other") {
+      const other = Object.keys(accentNames).find((a) => a !== accent());
+      toast(`🎙️ Real voice (${accentNames[other]})`);
+    }
     else if (source === "computer") toast("🤖 Computer voice");
   }
   function saySentence(text) {
@@ -129,27 +133,35 @@
   }
 
   // ---------- Header controls ----------
-  const notationButtons = document.querySelectorAll(".notation [data-notation]");
+  const notationGroup = document.querySelector(".notation");
+  notationGroup.replaceChildren(...NOTATIONS.map((n) => el("button", {
+    type: "button", role: "radio", "aria-checked": "false", dataset: { notation: n.id },
+  }, [
+    el("span", { class: "notation-name", text: n.label }),
+    el("span", { class: "notation-sub", text: n.accentName }),
+  ])));
+  const notationButtons = notationGroup.querySelectorAll("[data-notation]");
   notationButtons.forEach((btn) => {
     btn.addEventListener("click", () => setNotation(btn.dataset.notation));
     btn.addEventListener("keydown", (e) => {
-      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
-        e.preventDefault();
-        const next = state.notation === "dj" ? "kk" : "dj";
-        setNotation(next);
-        document.querySelector(`.notation [data-notation="${next}"]`).focus();
-      }
+      const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      const i = NOTATIONS.findIndex((n) => n.id === state.notation);
+      const next = NOTATIONS[(i + step + NOTATIONS.length) % NOTATIONS.length].id;
+      setNotation(next);
+      notationGroup.querySelector(`[data-notation="${next}"]`).focus();
     });
   });
 
-  function setNotation(notation) {
-    if (notation === state.notation) return;
-    state.notation = notation;
+  function setNotation(id) {
+    if (id === state.notation) return;
+    state.notation = id;
     saveSettings();
     syncHeader();
     render();
     if (state.openId) openDetail(state.openId);
-    toast(notation === "dj" ? "DJ symbols (British)" : "KK symbols (American)");
+    toast(`${notation().label} symbols (${notation().accentName})`);
   }
 
   function syncHeader() {
@@ -260,7 +272,6 @@
     const p = byId[id];
     state.openId = id;
     const target = sym(p);
-    const other = state.notation === "dj" ? "kk" : "dj";
 
     const head = el("div", {
       class: "detail-head",
@@ -268,10 +279,9 @@
     }, [
       el("p", { class: "detail-symbol", id: "detail-symbol", text: wrap(target) }),
       el("div", {}, [
-        el("p", { class: "detail-both" }, [
-          `${state.notation.toUpperCase()}: `, el("span", { class: "ipa", text: wrap(p[state.notation]) }),
-          `   |   ${other.toUpperCase()}: `, el("span", { class: "ipa", text: wrap(p[other]) }),
-        ]),
+        el("p", { class: "detail-both" }, NOTATIONS.flatMap((n, i) => [
+          `${i ? "   |   " : ""}${n.label}: `, el("span", { class: "ipa", text: wrap(p[n.id]) }),
+        ])),
         el("button", {
           type: "button", class: "play-btn",
           onclick: () => sayWord(p.words[0].word),
@@ -360,15 +370,12 @@
     // word in either notation, and with symbols that look different from the
     // answer and from each other in both notations.
     const sameKind = PHONEMES.filter((p) => (p.category === "consonant") === (target.category === "consonant"));
-    const inWord = {
-      dj: soundsIn(word.dj, "dj"),
-      kk: soundsIn(word.kk, "kk"),
-    };
+    const inWord = Object.fromEntries(NOTATIONS.map((n) => [n.id, soundsIn(word[n.id], n.id)]));
     const chosen = [target];
     for (const p of shuffle(sameKind)) {
       if (chosen.length === 4) break;
-      if (inWord.dj.has(p.dj) || inWord.kk.has(p.kk)) continue;
-      if (chosen.some((c) => c.dj === p.dj || c.kk === p.kk)) continue;
+      if (NOTATIONS.some((n) => inWord[n.id].has(p[n.id]))) continue;
+      if (chosen.some((c) => NOTATIONS.some((n) => c[n.id] === p[n.id]))) continue;
       chosen.push(p);
     }
     return { targetId: target.id, word, optionIds: shuffle(chosen).map((p) => p.id) };

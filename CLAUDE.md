@@ -19,7 +19,7 @@ The page needs internet access for the Wikimedia recordings and Google Fonts.
 
 Scripts are plain globals loaded in a fixed order by `index.html` (order matters):
 
-1. `js/data.js` defines `CATEGORIES`, `GROUPS`, `PHONEMES`, the single source of content.
+1. `js/data.js` defines `NOTATIONS`, `CATEGORIES`, `GROUPS`, `PHONEMES`, the single source of content.
 2. `js/recordings.js` defines `RECORDINGS` (word → `{uk, us}` → `[mp3Url, originalUrl]`). **Generated; do not edit by hand.**
 3. `js/audio.js` defines the `SoundPlayer` IIFE (`playWord`, `playSentence`, `stop`).
 4. `js/app.js` is an IIFE holding all UI state and rendering.
@@ -32,7 +32,7 @@ When you add or change words, keep both transcriptions consistent with the phone
 
 ### Notation ↔ accent
 
-`state.notation` (`dj` / `kk`) drives everything: displayed symbols (`p[state.notation]`), transcriptions, and audio accent (`dj` → `uk`, `kk` → `us`). Changing notation re-renders the view and any open detail dialog.
+`NOTATIONS` lists each notation's `id` (also the key used on phonemes and words), `label`, `accent` (`uk` / `us`), `accentName` and `alsoHas` (symbols that also contain another sound, e.g. KK `ɚ` contains an audible r; used for quiz distractors). The header radio buttons are built from it, and app.js never hard-codes `dj` / `kk` apart from the default. `state.notation` drives everything: displayed symbols (`p[state.notation]`), transcriptions, and audio accent. Changing notation re-renders the view and any open detail dialog.
 
 ### Rendering (`js/app.js`)
 

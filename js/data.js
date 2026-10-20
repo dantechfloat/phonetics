@@ -9,6 +9,15 @@
  * so switching the notation updates the whole page consistently.
  */
 
+const NOTATIONS = [
+  { id: "dj", label: "DJ", fullName: "Daniel Jones", accent: "uk", accentName: "British", alsoHas: {} },
+  {
+    id: "kk", label: "KK", fullName: "Kenyon & Knott", accent: "us", accentName: "American",
+    // Symbols that also contain another sound: a child hears an r in all of these.
+    alsoHas: { "ɪr": ["r"], "ɛr": ["r"], "ʊr": ["r"], "ɚ": ["r"], "ɝ": ["r"] },
+  },
+];
+
 const CATEGORIES = [
   { id: "vowel", label: "Vowels", emoji: "🍎" },
   { id: "diphthong", label: "Double Vowels", emoji: "🎈" },
