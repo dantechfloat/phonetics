@@ -1,0 +1,50 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+Sound Explorer: a kid-friendly static web page for learning English phonetic symbols (45 sounds) in two notations, **DJ** (Daniel Jones, British) and **KK** (Kenyon & Knott, American). Plain HTML/CSS/vanilla JS with no build step, no package manager, no framework, and no test suite.
+
+## Commands
+
+```sh
+python3 -m http.server 8000           # serve locally, then open http://localhost:8000
+python3 tools/build_recordings.py     # regenerate js/recordings.js from words in js/data.js (needs network)
+```
+
+The page needs internet access for the Wikimedia recordings and Google Fonts.
+
+## Architecture
+
+Scripts are plain globals loaded in a fixed order by `index.html` (order matters):
+
+1. `js/data.js` defines `CATEGORIES`, `GROUPS`, `PHONEMES`, the single source of content.
+2. `js/recordings.js` defines `RECORDINGS` (word → `{uk, us}` → `[mp3Url, originalUrl]`). **Generated; do not edit by hand.**
+3. `js/audio.js` defines the `SoundPlayer` IIFE (`playWord`, `playSentence`, `stop`).
+4. `js/app.js` is an IIFE holding all UI state and rendering.
+
+### Data model (`PHONEMES`)
+
+Each phoneme has `id`, `category` (`vowel` | `diphthong` | `consonant`), `group` (a key of `GROUPS`), `dj` and `kk` symbols, `tip`, `sentence`, optional `note`, and exactly 3 `words`, each `{ word, emoji, dj, kk }` with a full transcription in **both** notations. Consonants in the `pair` group also have `voicing` (`voiced` | `voiceless`) and `pair` (the partner's `id`); pairs must point at each other because the pair grid is built from the voiceless side.
+
+When you add or change words, keep both transcriptions consistent with the phoneme symbols, because the app tokenizes transcriptions using the set of `PHONEMES` symbols. Then rerun `tools/build_recordings.py`. It scrapes `word: "..."` with a regex, so keep that literal format.
+
+### Notation ↔ accent
+
+`state.notation` (`dj` / `kk`) drives everything: displayed symbols (`p[state.notation]`), transcriptions, and audio accent (`dj` → `uk`, `kk` → `us`). Changing notation re-renders the view and any open detail dialog.
+
+### Rendering (`js/app.js`)
+
+- Full re-render via `render()` into `<main id="view">` using the small `el(tag, attrs, children)` DOM helper (no innerHTML templating).
+- `tokenize()` splits a transcription by longest-match against the current notation's symbols, so multi-character symbols like `tʃ` and `ai` stay whole. It is used to highlight the target sound and to pick quiz distractors that don't occur in the word.
+- The detail view is a native `<dialog>`. The Sound Game (`MODES`, `QUIZ_LENGTH = 10`) keeps its state in `state.quiz`.
+- Settings (notation, slow, tab, best scores) persist to `localStorage` key `soundExplorer.v1`, wrapped in try/catch so the page still works without storage.
+
+### Audio fallback (`js/audio.js`)
+
+`playWord` tries, in order: a real recording in the selected accent (MP3 transcode, then the original file), then the browser `speechSynthesis` voice in that accent, then a recording in the other accent, then any speech voice. It returns `"recorded" | "computer" | "recorded-other" | "skipped"`, and app.js shows a toast for each. A `playToken` counter cancels stale plays. Sentences always use speech synthesis. Slow mode sets `playbackRate` to 0.7 for recordings and the speech rate to 0.6.
+
+### Styling
+
+`css/style.css` uses CSS custom properties on `:root`. Cards are colored by the `data-cat` / `data-voicing` attributes (vowel, diphthong, voiced, voiceless).

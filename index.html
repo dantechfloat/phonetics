@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sound Explorer</title>
+  <meta name="description" content="Learn English phonetic symbols with sounds, pictures, words and sentences. Switch between DJ and KK notation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&family=Noto+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">🔤</span>
+      <div>
+        <h1>Sound Explorer</h1>
+        <p class="tagline">Learn the sounds of English!</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="notation" role="radiogroup" aria-label="Phonetic notation">
+        <button type="button" role="radio" data-notation="dj" aria-checked="false">
+          <span class="notation-name">DJ</span>
+          <span class="notation-sub">British</span>
+        </button>
+        <button type="button" role="radio" data-notation="kk" aria-checked="false">
+          <span class="notation-name">KK</span>
+          <span class="notation-sub">American</span>
+        </button>
+      </div>
+      <label class="slow-toggle">
+        <input type="checkbox" id="slow-toggle">
+        <span class="slow-switch" aria-hidden="true"></span>
+        <span>🐢 Slow</span>
+      </label>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Sections">
+    <button type="button" class="tab" data-tab="vowel"><span aria-hidden="true">🍎</span> Vowels</button>
+    <button type="button" class="tab" data-tab="diphthong"><span aria-hidden="true">🎈</span> Double Vowels</button>
+    <button type="button" class="tab" data-tab="consonant"><span aria-hidden="true">🐝</span> Consonants</button>
+    <button type="button" class="tab tab-game" data-tab="quiz"><span aria-hidden="true">🎮</span> Sound Game</button>
+  </nav>
+
+  <main id="view" tabindex="-1"></main>
+
+  <dialog id="detail" aria-labelledby="detail-symbol">
+    <div class="detail-inner" id="detail-content"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <p><strong>DJ</strong> (Daniel Jones) symbols show British English. <strong>KK</strong> (Kenyon &amp; Knott) symbols show American English. Use the switch at the top to change them.</p>
+    <p>Real voice recordings come from <a href="https://en.wiktionary.org/">Wiktionary</a> and <a href="https://commons.wikimedia.org/">Wikimedia Commons</a> (CC BY-SA). When there is no recording, your browser's computer voice is used.</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/recordings.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
