@@ -18,7 +18,7 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-An internet connection is needed for the recordings and web fonts.
+An internet connection is needed for the recordings and web fonts. When the page is served over http(s) (not opened from disk), it works offline after the first visit, can be installed as an app, and the footer has a button to save all recordings for offline use, e.g. before a class with poor Wi-Fi.
 
 ## Files
 

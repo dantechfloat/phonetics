@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sound Explorer</title>
   <meta name="description" content="Learn English phonetic symbols with sounds, pictures, words and sentences. Switch between DJ and KK notation.">
+  <meta name="theme-color" content="#ff8a3d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&family=Noto+Sans:wght@500;700&display=swap" rel="stylesheet">
@@ -55,6 +59,7 @@
   <footer class="site-footer">
     <p><strong>DJ</strong> (Daniel Jones) symbols show British English. <strong>KK</strong> (Kenyon &amp; Knott) symbols show American English. Use the switch at the top to change them.</p>
     <p>Real voice recordings come from <a href="https://en.wiktionary.org/">Wiktionary</a> and <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>. Each recording's author and license are listed in the <button type="button" class="link-btn" id="credits-btn">recording credits</button>. When there is no recording, your browser's computer voice is used.</p>
+    <p id="offline" hidden>📶 No Wi-Fi in class? <button type="button" class="link-btn" id="offline-btn">Save all sounds for offline use</button> <span id="offline-status"></span></p>
   </footer>
 
   <script src="js/data.js"></script>

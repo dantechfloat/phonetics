@@ -17,7 +17,7 @@ node tools/check_links.js             # check every recording still exists on Co
 
 CI (`.github/workflows/checks.yml`) runs `check_data.js` on every push and pull request, and `check_links.js` weekly.
 
-The page needs internet access for the Wikimedia recordings and Google Fonts.
+The page needs internet access for the Wikimedia recordings and Google Fonts, unless they are cached: when served over http(s), `sw.js` (service worker) caches the page network-first and fonts/recordings cache-first, answering audio `Range` requests from the cached whole file. The footer's "Save all sounds for offline use" button fills the media cache (`sound-explorer-media-v1`, same name in app.js and sw.js). If you add a page file, add it to `PAGE_FILES` in sw.js. Opening `index.html` from disk works without the service worker.
 
 ## Architecture
 

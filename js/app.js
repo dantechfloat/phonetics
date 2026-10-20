@@ -936,6 +936,37 @@
     if (q.answered) box.querySelector(".next-btn").focus();
   }
 
+  // ---------- Offline use (only when served over http/https) ----------
+  // sw.js caches the page, fonts and every recording that has played. The
+  // button downloads all recordings at once, for classrooms with poor Wi-Fi.
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    document.getElementById("offline").hidden = false;
+  }
+
+  document.getElementById("offline-btn").addEventListener("click", async (e) => {
+    const button = e.currentTarget;
+    const status = document.getElementById("offline-status");
+    // Same cache name as MEDIA_CACHE in sw.js.
+    const cache = await caches.open("sound-explorer-media-v1");
+    const urls = Object.values(RECORDINGS)
+      .flatMap((byAccent) => Object.values(byAccent))
+      .map((rec) => new URL(rec.urls[0], location.href).href);
+    button.disabled = true;
+    let failed = 0;
+    for (const [i, url] of urls.entries()) {
+      status.textContent = `${i + 1} / ${urls.length}…`;
+      try {
+        if (!(await cache.match(url))) await cache.add(new Request(url, { mode: "cors", credentials: "omit" }));
+      } catch (err) {
+        failed++;
+      }
+    }
+    button.disabled = false;
+    status.textContent = failed ? `Saved ${urls.length - failed} sounds; ${failed} failed. Try again later.` : `✅ All ${urls.length} sounds saved.`;
+    announce(status.textContent);
+  });
+
   // ---------- Start ----------
   syncHeader();
   render();
