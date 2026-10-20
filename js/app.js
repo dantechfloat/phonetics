@@ -441,6 +441,9 @@
       el("section", { class: "detail-section" }, [
         el("h3", { text: "🖼️ Words with this sound" }),
         el("ul", { class: "word-list" }, wordItems),
+        p.words.some((w) => w[state.notation].includes("ˈ"))
+          ? el("p", { class: "note" }, ["👆 The little mark ", el("span", { class: "ipa", text: "ˈ" }), " means: say the next part louder!"])
+          : null,
       ]),
       el("section", { class: "detail-section" }, [
         el("h3", { text: "💬 Say it in a sentence" }),
