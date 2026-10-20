@@ -22,7 +22,7 @@ Scripts are plain globals loaded in a fixed order by `index.html` (order matters
 
 1. `js/data.js` defines `NOTATIONS`, `LEAD_INS`, `CATEGORIES`, `GROUPS`, `PHONEMES`, the single source of content.
 2. `js/recordings.js` defines `RECORDINGS` (word → `{uk, us}` → `{ file, urls: [mp3Url, originalUrl], page, author, license, licenseUrl?, says? }`; the author and license feed the Credits dialog). `says` is set when the clip is a phrase such as "a cat"; the build script only accepts the lead-in words in its `LEAD_INS`. **Generated; do not edit by hand.**
-3. `js/audio.js` defines the `SoundPlayer` IIFE (`playWord`, `playSentence`, `preload`, `stop`).
+3. `js/audio.js` defines the `SoundPlayer` IIFE (`playWord`, `playSentence`, `preload`, `stop`, plus `startRecording` / `playClip` for the opt-in "Say it yourself" recorder; recordings stay in memory as blob URLs and are never uploaded).
 4. `js/app.js` is an IIFE holding all UI state and rendering.
 
 ### Data model (`PHONEMES`)

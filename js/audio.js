@@ -9,6 +9,9 @@
  *      voice for the selected accent).
  *
  * Sentences always use the browser's computer voice.
+ *
+ * It can also record the learner from the microphone (only when they ask)
+ * and play that back. Recordings stay in memory on the device.
  */
 
 const SoundPlayer = (() => {
@@ -20,6 +23,7 @@ const SoundPlayer = (() => {
   // Preloaded audio elements by URL, oldest first.
   const preloaded = new Map();
   const PRELOAD_LIMIT = 12;
+  let activeRecorder = null;
 
   const hasSpeech = "speechSynthesis" in window;
 
@@ -53,6 +57,7 @@ const SoundPlayer = (() => {
 
   function stop() {
     playToken++;
+    if (activeRecorder && activeRecorder.state === "recording") activeRecorder.stop();
     if (currentAudio) {
       currentAudio.pause();
       currentAudio = null;
@@ -135,6 +140,40 @@ const SoundPlayer = (() => {
     return "computer";
   }
 
+  const canRecord = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+
+  /**
+   * Record from the microphone until session.stop() or maxMs.
+   * Resolves to { stop, done }, where done resolves to a blob URL.
+   * Rejects if there is no microphone or permission is denied.
+   */
+  async function startRecording({ maxMs = 3000 } = {}) {
+    stop();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    const chunks = [];
+    recorder.addEventListener("dataavailable", (e) => chunks.push(e.data));
+    const done = new Promise((resolve) => {
+      recorder.addEventListener("stop", () => {
+        clearTimeout(timer);
+        // Release the microphone right away.
+        stream.getTracks().forEach((track) => track.stop());
+        if (activeRecorder === recorder) activeRecorder = null;
+        resolve(URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType })));
+      });
+    });
+    recorder.start();
+    activeRecorder = recorder;
+    const timer = setTimeout(() => recorder.state === "recording" && recorder.stop(), maxMs);
+    return { stop: () => recorder.state === "recording" && recorder.stop(), done };
+  }
+
+  /** Play a clip from a URL, e.g. the learner's own recording. */
+  function playClip(url) {
+    stop();
+    return playUrls([url], false, playToken);
+  }
+
   /** Play a sentence with the computer voice. */
   function playSentence(text, { accent = "us", slow = false } = {}) {
     stop();
@@ -142,5 +181,5 @@ const SoundPlayer = (() => {
     return "computer";
   }
 
-  return { playWord, playSentence, preload, stop };
+  return { playWord, playSentence, preload, stop, canRecord, startRecording, playClip };
 })();

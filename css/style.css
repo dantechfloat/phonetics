@@ -408,6 +408,11 @@ dialog::backdrop { background: rgba(43, 45, 66, 0.55); }
 .play-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--brand-strong-edge); }
 .play-btn.small { padding: 6px 12px; font-size: 0.95rem; }
 
+.recorder { display: grid; gap: 8px; margin-top: 8px; }
+.recorder-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mode-btn.small { min-width: 0; padding: 6px 12px; font-size: 0.95rem; border-radius: 999px; }
+.play-btn.recording { background: var(--bad-ink); box-shadow: 0 4px 0 #7d1a1a; }
+
 .detail-section h3 { margin: 22px 0 8px; font-size: 1.1rem; font-weight: 900; }
 .tip {
   background: var(--bg);

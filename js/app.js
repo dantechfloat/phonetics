@@ -472,6 +472,11 @@
           ? el("p", { class: "note" }, ["👆 The little mark ", el("span", { class: "ipa", text: "ˈ" }), " means: say the next part louder!"])
           : null,
       ]),
+      SoundPlayer.canRecord ? el("section", { class: "detail-section" }, [
+        el("h3", { text: "🎤 Say it yourself" }),
+        el("p", { class: "note", text: "Record yourself, then compare with the real voice. Your recording stays on this device." }),
+        recorderSection(p),
+      ]) : null,
       el("section", { class: "detail-section" }, [
         el("h3", { text: "💬 Say it in a sentence" }),
         el("div", { class: "sentence" }, [
@@ -507,6 +512,51 @@
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog) closeDetail();
   });
+
+  // ---------- Record and compare (opt-in; recordings never leave the device) ----------
+  const myClips = new Map(); // word -> blob URL of the learner's last try
+  let recording = null; // { word, session } while the microphone is on
+  let drawRecorder = () => {}; // redraws the recorder in the open dialog
+
+  function recorderSection(p) {
+    const box = el("div", { class: "recorder" });
+    // The dialog is rebuilt on notation changes, so always draw the newest one.
+    const draw = drawRecorder = () => box.replaceChildren(...p.words.map((w) => {
+      const active = recording && recording.word === w.word;
+      const mine = !active && myClips.get(w.word);
+      return el("div", { class: "recorder-row" }, [
+        el("button", {
+          type: "button", class: `play-btn small${active ? " recording" : ""}`,
+          onclick: () => (active ? recording.session.stop() : recordWord(w.word)),
+        }, active ? "⏹️ Stop" : `🎤 Say "${w.word}"`),
+        mine ? el("button", { type: "button", class: "mode-btn small", onclick: () => SoundPlayer.playClip(mine) }, "▶️ Hear me") : null,
+        mine ? el("button", { type: "button", class: "mode-btn small", onclick: () => sayWord(w.word) }, "🔊 Real voice") : null,
+      ]);
+    }));
+    draw();
+    return box;
+  }
+
+  async function recordWord(word) {
+    if (recording) return;
+    try {
+      const session = await SoundPlayer.startRecording({ maxMs: 3000 });
+      recording = { word, session };
+      drawRecorder();
+      announce(`Recording. Say ${word}!`);
+      const url = await session.done;
+      if (myClips.has(word)) URL.revokeObjectURL(myClips.get(word));
+      myClips.set(word, url);
+      recording = null;
+      drawRecorder();
+      // Closing the dialog stops the recording; don't play it back then.
+      if (dialog.open) SoundPlayer.playClip(url);
+    } catch (err) {
+      recording = null;
+      drawRecorder();
+      toast("🎤 The microphone isn't available");
+    }
+  }
 
   // ---------- Recording credits ----------
   const creditsDialog = document.getElementById("credits");
