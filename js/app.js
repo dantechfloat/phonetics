@@ -338,7 +338,11 @@
       ]),
       partner ? el("button", {
         type: "button", class: "partner-link",
-        onclick: () => openDetail(partner.id),
+        onclick: () => {
+          openDetail(partner.id);
+          // The clicked link was replaced; focus the new one, which leads back.
+          detailContent.querySelector(".partner-link").focus();
+        },
       }, [`Compare with its partner sound ${wrap(sym(partner))} →`]) : null,
     ].filter(Boolean));
 
@@ -396,6 +400,8 @@
     q.question = makeQuestion(q.queue[q.index]);
     q.answered = null;
     render();
+    // The button that was clicked is gone; keep keyboard users in the game.
+    view.querySelector(".quiz .play-btn").focus();
     sayWord(q.question.word.word);
   }
 
@@ -443,7 +449,7 @@
         el("p", { class: "section-intro", text: `Best score: ${best} ⭐` }),
         el("div", { class: "quiz-actions" }, [
           el("button", { type: "button", class: "play-btn", onclick: () => startQuiz(q.mode) }, "🔁 Play again"),
-          el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); } }, "Choose a game"),
+          el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); view.querySelector(".mode-btn").focus(); } }, "Choose a game"),
         ]),
       );
       return;
@@ -490,7 +496,14 @@
         el("button", { type: "button", class: "mode-btn", onclick: () => openDetail(targetId) }, `Learn ${wrap(sym(target))}`),
         el("button", {
           type: "button", class: "play-btn",
-          onclick: () => { q.index++; if (q.index < QUIZ_LENGTH) nextQuestion(); else render(); },
+          onclick: () => {
+            q.index++;
+            if (q.index < QUIZ_LENGTH) nextQuestion();
+            else {
+              render();
+              view.querySelector(".quiz .play-btn").focus();
+            }
+          },
         }, q.index + 1 < QUIZ_LENGTH ? "Next ➜" : "See my stars ➜"),
       ]) : null,
     );
