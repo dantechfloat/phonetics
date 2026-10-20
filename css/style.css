@@ -588,11 +588,28 @@ mark {
   padding: 10px 8px;
 }
 .option-emoji { font-size: 2.8rem; line-height: 1.2; }
+.pair-compare { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 24px; font-size: 1.2rem; }
 .option-word { font-size: 1.1rem; font-weight: 900; }
 .feedback { font-size: 1.3rem; font-weight: 900; min-height: 2em; margin: 8px 0 0; }
 .feedback.good { color: var(--good-ink); }
 .feedback.bad { color: var(--bad-ink); }
 .quiz-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 10px; }
+.my-sounds { margin-top: 30px; border-top: 3px dashed var(--line); padding-top: 4px; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-weight: 800; font-size: 0.95rem; }
+.sound-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 12px 0; }
+.sound-chip {
+  font-family: var(--font-ipa);
+  font-size: 1.15rem;
+  font-weight: 700;
+  min-width: 58px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 3px solid var(--line);
+  background: var(--surface);
+}
+.sound-chip.learning { border-color: var(--star); background: #fff4d1; }
+.sound-chip.known { border-color: var(--good); background: var(--voiced-soft); }
+
 .big-stars { font-size: 2.6rem; letter-spacing: 4px; margin: 10px 0; }
 
 /* ---------- Footer ---------- */

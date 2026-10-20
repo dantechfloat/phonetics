@@ -28,6 +28,7 @@
         tab: state.tab,
         best: state.best,
         earsOnly: state.earsOnly,
+        progress: state.progress,
       }));
     } catch (err) {
       // Storage unavailable (private mode, blocked): ignore.
@@ -39,8 +40,9 @@
     notation: notationById[saved.notation] ? saved.notation : "kk",
     slow: !!saved.slow,
     tab: ["vowel", "diphthong", "consonant", "compare", "quiz"].includes(saved.tab) ? saved.tab : "vowel",
-    best: saved.best || {},
+    best: saved.best || {}, // "<notation>:<mode>" -> stars
     earsOnly: !!saved.earsOnly,
+    progress: saved.progress || {}, // sound id -> { right, wrong }
     openId: null,
     quiz: null,
   };
@@ -533,13 +535,50 @@
     // Questions are made up front so the next word's audio can be preloaded.
     const questions = m.type === "read" ? shuffle(allWords).slice(0, QUIZ_LENGTH).map(makeReadQuestion)
       : m.type === "pairs" ? shuffle(MINIMAL_PAIRS).slice(0, QUIZ_LENGTH).map(makePairsQuestion)
-      : shuffle(PHONEMES.filter(m.pool)).slice(0, QUIZ_LENGTH)
+      : practiceTargets(PHONEMES.filter(m.pool), QUIZ_LENGTH)
         .map(m.type === "hear" ? makeHearQuestion : makeFindQuestion);
     state.quiz = { mode, questions, index: 0, score: 0, question: null, answered: null };
     nextQuestion();
   }
 
   const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
+  const bestKey = (mode) => `${state.notation}:${mode}`;
+
+  // ---------- Progress ----------
+  /** "new", "learning" or "known" for a sound, from saved right/wrong answers. */
+  function level(p) {
+    const { right = 0, wrong = 0 } = state.progress[p.id] || {};
+    if (!right && !wrong) return "new";
+    return right >= 2 && right / (right + wrong) >= 0.8 ? "known" : "learning";
+  }
+  const LEVELS = {
+    new: { label: "not tried yet", emoji: "⚪" },
+    learning: { label: "still learning", emoji: "🌱" },
+    known: { label: "I know it!", emoji: "⭐" },
+  };
+
+  function record(id, right) {
+    const entry = state.progress[id] || (state.progress[id] = { right: 0, wrong: 0 });
+    entry[right ? "right" : "wrong"]++;
+    saveSettings();
+  }
+
+  /**
+   * Pick `count` different sounds, favoring ones the child often misses.
+   * Weighted sampling without replacement: sort by random^(1/weight).
+   */
+  function practiceTargets(pool, count) {
+    const weight = (p) => {
+      const { right = 0, wrong = 0 } = state.progress[p.id] || {};
+      const missRate = right + wrong ? wrong / (right + wrong) : 0.5;
+      return 1 + 3 * missRate;
+    };
+    return pool
+      .map((p) => ({ p, key: Math.random() ** (1 / weight(p)) }))
+      .sort((a, b) => b.key - a.key)
+      .slice(0, count)
+      .map(({ p }) => p);
+  }
 
   /** Does any notation's transcription of the word contain the sound? */
   const wordHasSound = (word, p) => NOTATIONS.some((n) => soundsIn(word[n.id], n.id).has(p[n.id]));
@@ -625,6 +664,7 @@
     q.answered = choice;
     const right = choice === question.answer;
     if (right) q.score++;
+    if (question.targetId) record(question.targetId, right);
     q.praise = pickOne(["Great job! ⭐", "You got it! ⭐", "Super! ⭐", "Well done! ⭐"]);
     render();
     announce(right ? q.praise
@@ -653,16 +693,48 @@
           return el("button", { type: "button", class: "mode-btn", onclick: () => startQuiz(key) }, [
             el("span", { "aria-hidden": "true", text: m.emoji }),
             m.label,
-            state.best[key] != null ? el("small", { text: `Best: ${state.best[key]} ⭐` }) : null,
+            state.best[bestKey(key)] != null ? el("small", { text: `Best (${notation().label}): ${state.best[bestKey(key)]} ⭐` }) : null,
           ]);
         })),
       ]),
+      renderMySounds(),
     );
   }
 
+  /** Every sound, colored by how well the child knows it. */
+  function renderMySounds() {
+    const counts = { new: 0, learning: 0, known: 0 };
+    const chips = PHONEMES.map((p) => {
+      const l = level(p);
+      counts[l]++;
+      return el("button", {
+        type: "button", class: `sound-chip ${l}`,
+        "aria-label": `${p.name}: ${LEVELS[l].label}`,
+        title: `${p.name}: ${LEVELS[l].label}`,
+        onclick: () => openDetail(p.id),
+      }, wrap(sym(p)));
+    });
+    return el("section", { class: "my-sounds" }, [
+      el("h3", { class: "game-group", text: "⭐ My sounds" }),
+      el("p", { class: "section-intro", text: "Sounds you miss come up more often in the games. Tap a sound to practice it." }),
+      el("p", { class: "legend" }, Object.entries(LEVELS).map(([key, l]) =>
+        el("span", { class: `legend-item ${key}` }, `${l.emoji} ${l.label}: ${counts[key]}`))),
+      el("div", { class: "sound-chips" }, chips),
+      counts.new < PHONEMES.length ? el("button", {
+        type: "button", class: "link-btn",
+        onclick: () => {
+          if (!confirm("Forget all your sound progress?")) return;
+          state.progress = {};
+          saveSettings();
+          render();
+        },
+      }, "Start over") : null,
+    ]);
+  }
+
   function renderResults(box, q) {
-    const best = Math.max(q.score, state.best[q.mode] || 0);
-    state.best[q.mode] = best;
+    const best = Math.max(q.score, state.best[bestKey(q.mode)] || 0);
+    state.best[bestKey(q.mode)] = best;
     saveSettings();
     const message = q.score === QUIZ_LENGTH ? "Perfect! You are a Sound Star! 🏆"
       : q.score >= 7 ? "Awesome work! 🎉"
@@ -672,7 +744,7 @@
       el("h2", { text: message }),
       el("p", { class: "big-stars", "aria-label": `${q.score} stars`, text: "⭐".repeat(q.score) || "🌱" }),
       el("p", { text: `You got ${q.score} out of ${QUIZ_LENGTH}.` }),
-      el("p", { class: "section-intro", text: `Best score: ${best} ⭐` }),
+      el("p", { class: "section-intro", text: `Best score (${notation().label}): ${best} ⭐` }),
       el("div", { class: "quiz-actions" }, [
         el("button", { type: "button", class: "play-btn", onclick: () => startQuiz(q.mode) }, "🔁 Play again"),
         el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); view.querySelector(".mode-btn").focus(); } }, "Choose a game"),
