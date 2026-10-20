@@ -37,7 +37,7 @@
   const state = {
     notation: notationById[saved.notation] ? saved.notation : "kk",
     slow: !!saved.slow,
-    tab: ["vowel", "diphthong", "consonant", "quiz"].includes(saved.tab) ? saved.tab : "vowel",
+    tab: ["vowel", "diphthong", "consonant", "compare", "quiz"].includes(saved.tab) ? saved.tab : "vowel",
     best: saved.best || {},
     openId: null,
     quiz: null,
@@ -274,9 +274,78 @@
     }
   }
 
+  // ---------- Notation comparison ----------
+  /**
+   * Symbols used by more than one notation for completely different sounds
+   * (DJ /i/ is "fish", KK /i/ is "sea"): symbol -> { notationId: [phonemes] }.
+   */
+  const trickySymbols = (() => {
+    const result = new Map();
+    const symbols = new Set(PHONEMES.flatMap((p) => NOTATIONS.map((n) => p[n.id])));
+    for (const symbol of symbols) {
+      const users = Object.fromEntries(NOTATIONS
+        .map((n) => [n.id, PHONEMES.filter((p) => p[n.id] === symbol)])
+        .filter(([, list]) => list.length));
+      const lists = Object.values(users);
+      const shared = lists.some((a, i) => lists.slice(i + 1).some((b) => a.some((p) => b.includes(p))));
+      if (lists.length > 1 && !shared) result.set(symbol, users);
+    }
+    return result;
+  })();
+
+  function renderCompare() {
+    const asIn = (p) => `${p.words[0].emoji} ${p.name} (${p.words[0].word})`;
+    view.append(
+      el("p", { class: "section-intro", text: `The same sounds, written the ${NOTATIONS.map((n) => n.label).join(" way and the ")} way. Tap a sound to learn it!` }),
+      el("h2", { class: "group-title", text: "⚠️ Tricky symbols" }),
+      el("p", { class: "hint-box" }, `These symbols look the same in ${NOTATIONS.map((n) => n.label).join(" and ")}, but they mean different sounds!`),
+      el("div", { class: "tricky-grid" }, [...trickySymbols].map(([symbol, users]) =>
+        el("div", { class: "tricky" }, [
+          el("p", { class: "tricky-symbol", text: wrap(symbol) }),
+          el("ul", {}, NOTATIONS.filter((n) => users[n.id]).map((n) =>
+            el("li", {}, [el("strong", { text: `In ${n.label}: ` }), users[n.id].map(asIn).join(", ")])
+          )),
+        ])
+      )),
+    );
+
+    for (const category of CATEGORIES) {
+      const rows = PHONEMES.filter((p) => p.category === category.id).map((p) => {
+        const differs = NOTATIONS.some((n) => p[n.id] !== p[NOTATIONS[0].id]);
+        return el("tr", { class: differs ? "differs" : null }, [
+          el("th", { scope: "row" }, el("button", {
+            type: "button", class: "compare-sound",
+            onclick: () => openDetail(p.id),
+          }, [
+            el("span", { "aria-hidden": "true", text: p.words[0].emoji }), " ",
+            el("strong", { text: p.name }), ` as in ${p.words[0].word}`,
+          ])),
+          ...NOTATIONS.map((n) => el("td", {
+            class: trickySymbols.has(p[n.id]) ? "ipa tricky-cell" : "ipa",
+          }, [
+            wrap(p[n.id]),
+            trickySymbols.has(p[n.id]) ? el("span", { class: "tricky-flag", title: "Tricky symbol", text: " ⚠️" }) : null,
+          ])),
+        ]);
+      });
+      view.append(
+        el("h2", { class: "group-title", text: `${category.emoji} ${category.label}` }),
+        el("div", { class: "table-wrap" }, el("table", { class: "compare-table" }, [
+          el("thead", {}, el("tr", {}, [
+            el("th", { scope: "col", text: "Sound" }),
+            ...NOTATIONS.map((n) => el("th", { scope: "col" }, [n.label, el("small", { text: n.accentName })])),
+          ])),
+          el("tbody", {}, rows),
+        ])),
+      );
+    }
+    view.append(el("p", { class: "note", text: "Rows with a colored edge are written differently in the two notations. ⚠️ marks a tricky symbol." }));
+  }
+
   function render() {
     view.replaceChildren();
     if (state.tab === "quiz") renderQuiz();
+    else if (state.tab === "compare") renderCompare();
     else renderCategory(state.tab);
   }
 
