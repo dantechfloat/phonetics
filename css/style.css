@@ -538,12 +538,26 @@ mark {
   min-width: 160px;
 }
 .mode-btn span { display: block; font-size: 2rem; }
+.mode-btn small { display: block; font-weight: 700; }
+.game-group { margin: 26px 0 0; font-size: 1.3rem; font-weight: 900; }
 .mode-btn:hover { border-color: var(--brand); }
 
 .quiz-progress { display: flex; justify-content: space-between; font-weight: 800; color: var(--ink-soft); }
 .quiz-stars { letter-spacing: 2px; }
 .quiz-emoji { font-size: 5rem; line-height: 1.1; margin-top: 10px; }
 .quiz-word { font-size: 2rem; font-weight: 900; margin: 0; }
+.quiz-symbol, .quiz-transcription {
+  font-family: var(--font-ipa);
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 12px auto 0;
+  padding: 6px 24px;
+  width: fit-content;
+  max-width: 100%;
+  background: var(--bg);
+  border-radius: 22px;
+}
 .quiz-question { font-weight: 800; font-size: 1.15rem; }
 .options {
   display: grid;
@@ -565,6 +579,16 @@ mark {
 .option:disabled { cursor: default; }
 .option.correct { border-color: var(--good); background: var(--voiced-soft); }
 .option.wrong { border-color: var(--bad); background: var(--vowel-soft); }
+.option.picture {
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+}
+.option-emoji { font-size: 2.8rem; line-height: 1.2; }
+.option-word { font-size: 1.1rem; font-weight: 900; }
 .feedback { font-size: 1.3rem; font-weight: 900; min-height: 2em; margin: 8px 0 0; }
 .feedback.good { color: var(--good-ink); }
 .feedback.bad { color: var(--bad-ink); }

@@ -40,7 +40,7 @@ When you add or change words, keep both transcriptions consistent with the phone
 - Full re-render via `render()` into `<main id="view">` using the small `el(tag, attrs, children)` DOM helper (no innerHTML templating).
 - `tokenize()` splits a transcription by longest-match against the current notation's symbols, so multi-character symbols like `tʃ` and `ai` stay whole. It is used to highlight the target sound and to pick quiz distractors that don't occur in the word.
 - Tabs: one per category, `compare` (DJ vs KK table; "tricky" symbols are computed as symbols that different notations use for disjoint sets of sounds) and `quiz`.
-- The detail view is a native `<dialog>`. The Sound Game (`MODES`, `QUIZ_LENGTH = 10`) keeps its state in `state.quiz`.
+- The detail view is a native `<dialog>`. The Sound Game (`MODES`, `GAME_GROUPS`, `QUIZ_LENGTH = 10`) keeps its state in `state.quiz`. Each mode has a question `type`: `hear` (hear a word, pick its sound), `find` (see a symbol, pick the picture with that sound) or `read` (see a transcription, pick the picture). All questions of a round are made in `startQuiz`, each with `answer` and `options` (sound ids for `hear`, word texts otherwise).
 - Settings (notation, slow, tab, best scores, ears-only) persist to `localStorage` key `soundExplorer.v1`, wrapped in try/catch so the page still works without storage.
 
 ### Audio fallback (`js/audio.js`)

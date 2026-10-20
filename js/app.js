@@ -497,22 +497,54 @@
   });
 
   // ---------- Sound Game ----------
+  // Every game asks QUIZ_LENGTH questions. A question has a type, an answer
+  // and options: sound ids for "hear", words for the picture games.
+  const allWords = [...new Map(PHONEMES.flatMap((p) => p.words).map((w) => [w.word, w])).values()];
+  const wordByText = Object.fromEntries(allWords.map((w) => [w.word, w]));
+
   const MODES = {
-    vowel: { label: "Vowel Sounds", emoji: "🍎", pool: (p) => p.category !== "consonant" },
-    consonant: { label: "Consonant Sounds", emoji: "🐝", pool: (p) => p.category === "consonant" },
-    mix: { label: "Mix It Up", emoji: "🌈", pool: () => true },
+    vowel: { type: "hear", label: "Vowel Sounds", emoji: "🍎", pool: (p) => p.category !== "consonant" },
+    consonant: { type: "hear", label: "Consonant Sounds", emoji: "🐝", pool: (p) => p.category === "consonant" },
+    mix: { type: "hear", label: "Mix It Up", emoji: "🌈", pool: () => true },
+    find: { type: "find", label: "Find the Sound", emoji: "🔎", pool: () => true },
+    read: { type: "read", label: "Read It!", emoji: "📖" },
   };
+  const GAME_GROUPS = [
+    { title: "👂 Hear it", text: "Listen to a word and find its sound.", modes: ["vowel", "consonant", "mix"], earsOnly: true },
+    { title: "🔤 Read it", text: "Read the symbols and find the picture.", modes: ["find", "read"] },
+  ];
 
   function startQuiz(mode) {
-    // Every pool has at least QUIZ_LENGTH sounds, so a round never repeats one.
+    const m = MODES[mode];
+    // Every pool has at least QUIZ_LENGTH items, so a round never repeats one.
     // Questions are made up front so the next word's audio can be preloaded.
-    const questions = shuffle(PHONEMES.filter(MODES[mode].pool)).slice(0, QUIZ_LENGTH).map(makeQuestion);
+    const questions = m.type === "read"
+      ? shuffle(allWords).slice(0, QUIZ_LENGTH).map(makeReadQuestion)
+      : shuffle(PHONEMES.filter(m.pool)).slice(0, QUIZ_LENGTH)
+        .map(m.type === "hear" ? makeHearQuestion : makeFindQuestion);
     state.quiz = { mode, questions, index: 0, score: 0, question: null, answered: null };
     nextQuestion();
   }
 
-  function makeQuestion(target) {
-    const word = target.words[Math.floor(Math.random() * target.words.length)];
+  const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
+
+  /** Does any notation's transcription of the word contain the sound? */
+  const wordHasSound = (word, p) => NOTATIONS.some((n) => soundsIn(word[n.id], n.id).has(p[n.id]));
+
+  /** The answer word plus up to 3 other words that pass `ok`, all with different pictures. */
+  function pictureOptions(answerWord, ok) {
+    const chosen = [answerWord];
+    for (const w of shuffle(allWords)) {
+      if (chosen.length === 4) break;
+      if (chosen.some((c) => c.word === w.word || c.emoji === w.emoji) || !ok(w)) continue;
+      chosen.push(w);
+    }
+    return shuffle(chosen).map((w) => w.word);
+  }
+
+  /** Hear a word, pick its sound. */
+  function makeHearQuestion(target) {
+    const word = pickOne(target.words);
 
     // Distractors: same kind of sound (vowel vs consonant), not present in the
     // word in either notation, and with symbols that look different from the
@@ -529,31 +561,146 @@
       if (chosen.some((c) => NOTATIONS.some((n) => c[n.id] === p[n.id]))) continue;
       chosen.push(p);
     }
-    return { targetId: target.id, word, optionIds: shuffle(chosen).map((p) => p.id) };
+    return { type: "hear", targetId: target.id, word, answer: target.id, options: shuffle(chosen).map((p) => p.id) };
+  }
+
+  /** See a symbol, pick the picture whose word has that sound. */
+  function makeFindQuestion(target) {
+    const word = pickOne(target.words);
+    // Wrong pictures must not have the sound in any notation, not even as part
+    // of a bigger symbol: /ʃ/ is visible in "chair" /tʃɛr/, and so is /ɪ/ in /naɪn/.
+    const options = pictureOptions(word, (w) =>
+      !wordHasSound(w, target) && NOTATIONS.every((n) => !w[n.id].includes(target[n.id])));
+    return { type: "find", targetId: target.id, word, answer: word.word, options };
+  }
+
+  /** See a transcription, pick its picture. */
+  function makeReadQuestion(word) {
+    const options = pictureOptions(word, (w) => NOTATIONS.every((n) => w[n.id] !== word[n.id]));
+    return { type: "read", word, answer: word.word, options };
   }
 
   function nextQuestion() {
     const q = state.quiz;
     q.question = q.questions[q.index];
+    q.answered = null;
     const upcoming = q.questions[q.index + 1];
     if (upcoming) SoundPlayer.preload([upcoming.word.word], { accent: accent() });
-    q.answered = null;
     render();
     // The button that was clicked is gone; keep keyboard users in the game.
-    view.querySelector(".quiz .play-btn").focus();
-    sayWord(q.question.word.word);
+    if (q.question.type === "hear") {
+      view.querySelector(".quiz .play-btn").focus();
+      sayWord(q.question.word.word);
+    } else {
+      view.querySelector(".quiz .option").focus();
+    }
   }
 
-  function answer(id) {
+  function answer(choice) {
     const q = state.quiz;
     if (q.answered) return;
-    q.answered = id;
-    const target = byId[q.question.targetId];
-    const right = id === target.id;
+    const question = q.question;
+    q.answered = choice;
+    const right = choice === question.answer;
     if (right) q.score++;
-    q.praise = shuffle(["Great job! ⭐", "You got it! ⭐", "Super! ⭐", "Well done! ⭐"])[0];
+    q.praise = pickOne(["Great job! ⭐", "You got it! ⭐", "Super! ⭐", "Well done! ⭐"]);
     render();
-    announce(right ? q.praise : `Nice try! The answer is the ${target.name} sound.`);
+    announce(right ? q.praise
+      : question.type === "hear" ? `Nice try! The answer is the ${byId[question.answer].name} sound.`
+      : `Nice try! The answer is ${question.answer}.`);
+    // In the picture games, hearing the answer is part of the reward.
+    if (question.type !== "hear") sayWord(question.answer);
+  }
+
+  function renderGameMenu(box) {
+    box.append(
+      el("h2", { text: "🎮 Sound Game" }),
+      el("p", { class: "section-intro", text: `${QUIZ_LENGTH} questions. Collect as many stars as you can!` }),
+      ...GAME_GROUPS.flatMap((group) => [
+        el("h3", { class: "game-group", text: group.title }),
+        el("p", { text: group.text }),
+        group.earsOnly ? el("label", { class: "ears-toggle" }, [
+          el("input", {
+            type: "checkbox", checked: state.earsOnly ? "" : false,
+            onchange: (e) => { state.earsOnly = e.target.checked; saveSettings(); },
+          }),
+          " 👂 Ears only: hide the word, so you have to listen",
+        ]) : null,
+        el("div", { class: "mode-list" }, group.modes.map((key) => {
+          const m = MODES[key];
+          return el("button", { type: "button", class: "mode-btn", onclick: () => startQuiz(key) }, [
+            el("span", { "aria-hidden": "true", text: m.emoji }),
+            m.label,
+            state.best[key] != null ? el("small", { text: `Best: ${state.best[key]} ⭐` }) : null,
+          ]);
+        })),
+      ]),
+    );
+  }
+
+  function renderResults(box, q) {
+    const best = Math.max(q.score, state.best[q.mode] || 0);
+    state.best[q.mode] = best;
+    saveSettings();
+    const message = q.score === QUIZ_LENGTH ? "Perfect! You are a Sound Star! 🏆"
+      : q.score >= 7 ? "Awesome work! 🎉"
+      : q.score >= 4 ? "Good job! Keep practicing! 💪"
+      : "Nice try! Let's play again! 😊";
+    box.append(
+      el("h2", { text: message }),
+      el("p", { class: "big-stars", "aria-label": `${q.score} stars`, text: "⭐".repeat(q.score) || "🌱" }),
+      el("p", { text: `You got ${q.score} out of ${QUIZ_LENGTH}.` }),
+      el("p", { class: "section-intro", text: `Best score: ${best} ⭐` }),
+      el("div", { class: "quiz-actions" }, [
+        el("button", { type: "button", class: "play-btn", onclick: () => startQuiz(q.mode) }, "🔁 Play again"),
+        el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); view.querySelector(".mode-btn").focus(); } }, "Choose a game"),
+      ]),
+    );
+  }
+
+  /** The prompt part of a question: what the child hears or reads. */
+  function questionPrompt(question, answered) {
+    const { type, word } = question;
+    const target = question.targetId && byId[question.targetId];
+    if (type === "hear") {
+      // In ears-only mode the spelling would give the answer away ("sh" in "ship").
+      const hideWord = state.earsOnly && !answered;
+      return [
+        el("div", { class: "quiz-emoji", "aria-hidden": "true", text: word.emoji }),
+        hideWord ? null : el("p", { class: "quiz-word", text: word.word }),
+        answered ? transcriptionNode(word[state.notation], sym(target)) : null,
+        el("p", { class: "quiz-question", text: hideWord ? "Which sound do you hear?" : `Which sound do you hear in "${word.word}"?` }),
+        el("button", { type: "button", class: "play-btn", onclick: () => sayWord(word.word) }, "🔊 Listen again"),
+      ];
+    }
+    if (type === "find") {
+      return [
+        el("p", { class: "quiz-symbol", "aria-label": `${target.name} sound`, text: wrap(sym(target)) }),
+        el("p", { class: "quiz-question", text: "Which word has this sound?" }),
+        answered ? el("p", {}, [el("strong", { text: word.word }), " ", transcriptionNode(word[state.notation], sym(target))]) : null,
+      ];
+    }
+    // "read"
+    return [
+      el("p", { class: "quiz-transcription", text: wrap(word[state.notation]) }),
+      el("p", { class: "quiz-question", text: "Which picture is this word?" }),
+    ];
+  }
+
+  function optionButton(question, choice, answered) {
+    let cls = "option";
+    if (answered && choice === question.answer) cls += " correct";
+    else if (answered === choice) cls += " wrong";
+    const attrs = { type: "button", disabled: answered ? "" : false, onclick: () => answer(choice) };
+    if (question.type === "hear") {
+      const p = byId[choice];
+      return el("button", { ...attrs, class: cls, "aria-label": `${p.name} sound` }, wrap(sym(p)));
+    }
+    const w = wordByText[choice];
+    return el("button", { ...attrs, class: `${cls} picture` }, [
+      el("span", { class: "option-emoji", "aria-hidden": "true", text: w.emoji }),
+      el("span", { class: "option-word", text: w.word }),
+    ]);
   }
 
   function renderQuiz() {
@@ -561,64 +708,19 @@
     const box = el("div", { class: "quiz" });
     view.append(box);
 
-    if (!q) {
-      box.append(
-        el("h2", { text: "🎮 Sound Game" }),
-        el("p", { text: "Listen to a word and find its sound!" }),
-        el("p", { class: "section-intro", text: `${QUIZ_LENGTH} questions. Collect as many stars as you can!` }),
-        el("label", { class: "ears-toggle" }, [
-          el("input", {
-            type: "checkbox", checked: state.earsOnly ? "" : false,
-            onchange: (e) => { state.earsOnly = e.target.checked; saveSettings(); },
-          }),
-          " 👂 Ears only: hide the word, so you have to listen",
-        ]),
-        el("div", { class: "mode-list" }, Object.entries(MODES).map(([key, m]) =>
-          el("button", { type: "button", class: "mode-btn", onclick: () => startQuiz(key) }, [
-            el("span", { "aria-hidden": "true", text: m.emoji }),
-            m.label,
-            state.best[key] != null ? el("small", { style: "display:block;font-weight:700", text: `Best: ${state.best[key]} ⭐` }) : null,
-          ])
-        )),
-      );
-      return;
-    }
+    if (!q) return renderGameMenu(box);
+    if (q.index >= QUIZ_LENGTH) return renderResults(box, q);
 
-    if (q.index >= QUIZ_LENGTH) {
-      const best = Math.max(q.score, state.best[q.mode] || 0);
-      state.best[q.mode] = best;
-      saveSettings();
-      const message = q.score === QUIZ_LENGTH ? "Perfect! You are a Sound Star! 🏆"
-        : q.score >= 7 ? "Awesome work! 🎉"
-        : q.score >= 4 ? "Good job! Keep practicing! 💪"
-        : "Nice try! Let's play again! 😊";
-      box.append(
-        el("h2", { text: message }),
-        el("p", { class: "big-stars", "aria-label": `${q.score} stars`, text: "⭐".repeat(q.score) || "🌱" }),
-        el("p", { text: `You got ${q.score} out of ${QUIZ_LENGTH}.` }),
-        el("p", { class: "section-intro", text: `Best score: ${best} ⭐` }),
-        el("div", { class: "quiz-actions" }, [
-          el("button", { type: "button", class: "play-btn", onclick: () => startQuiz(q.mode) }, "🔁 Play again"),
-          el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); view.querySelector(".mode-btn").focus(); } }, "Choose a game"),
-        ]),
-      );
-      return;
-    }
-
-    const { word, targetId, optionIds } = q.question;
-    const target = byId[targetId];
-    const hideWord = state.earsOnly && !q.answered;
+    const question = q.question;
+    const target = question.targetId && byId[question.targetId];
     // Visual only: answer() announces the result through the live region.
     const feedback = el("p", { class: "feedback", "aria-hidden": "true" });
-
-    if (q.answered) {
-      if (q.answered === targetId) {
-        feedback.classList.add("good");
-        feedback.textContent = q.praise;
-      } else {
-        feedback.classList.add("bad");
-        feedback.textContent = `Nice try! The answer is ${wrap(sym(target))}.`;
-      }
+    if (q.answered === question.answer) {
+      feedback.classList.add("good");
+      feedback.textContent = q.praise;
+    } else if (q.answered) {
+      feedback.classList.add("bad");
+      feedback.textContent = `Nice try! The answer is ${question.type === "hear" ? wrap(sym(target)) : question.answer}.`;
     }
 
     box.append(
@@ -626,29 +728,13 @@
         el("span", { text: `Question ${q.index + 1} / ${QUIZ_LENGTH}` }),
         el("span", { class: "quiz-stars", "aria-label": `${q.score} stars`, text: `⭐ ${q.score}` }),
       ]),
-      el("div", { class: "quiz-emoji", "aria-hidden": "true", text: word.emoji }),
-      // In ears-only mode the spelling would give the answer away ("sh" in "ship").
-      hideWord ? null : el("p", { class: "quiz-word", text: word.word }),
-      q.answered ? transcriptionNode(word[state.notation], sym(target)) : null,
-      el("p", { class: "quiz-question", text: hideWord ? "Which sound do you hear?" : `Which sound do you hear in "${word.word}"?` }),
-      el("button", { type: "button", class: "play-btn", onclick: () => sayWord(word.word) }, "🔊 Listen again"),
-      el("div", { class: "options" }, optionIds.map((id) => {
-        const p = byId[id];
-        let cls = "option";
-        if (q.answered && id === targetId) cls += " correct";
-        else if (q.answered === id) cls += " wrong";
-        return el("button", {
-          type: "button", class: cls,
-          disabled: q.answered ? "" : false,
-          "aria-label": `${p.name} sound`,
-          onclick: () => answer(id),
-        }, wrap(sym(p)));
-      })),
+      ...questionPrompt(question, q.answered),
+      el("div", { class: "options" }, question.options.map((choice) => optionButton(question, choice, q.answered))),
       feedback,
       q.answered ? el("div", { class: "quiz-actions" }, [
-        el("button", { type: "button", class: "mode-btn", onclick: () => openDetail(targetId) }, `Learn ${wrap(sym(target))}`),
+        target ? el("button", { type: "button", class: "mode-btn", onclick: () => openDetail(target.id) }, `Learn ${wrap(sym(target))}`) : null,
         el("button", {
-          type: "button", class: "play-btn",
+          type: "button", class: "play-btn next-btn",
           onclick: () => {
             q.index++;
             if (q.index < QUIZ_LENGTH) nextQuestion();
@@ -661,7 +747,7 @@
       ]) : null,
     );
 
-    if (q.answered) box.querySelector(".quiz-actions .play-btn").focus();
+    if (q.answered) box.querySelector(".next-btn").focus();
   }
 
   // ---------- Start ----------
