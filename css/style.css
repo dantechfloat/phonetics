@@ -518,6 +518,15 @@ mark {
 }
 .quiz h2 { margin: 0 0 8px; font-size: 1.8rem; font-weight: 900; }
 .quiz p { margin: 6px 0; }
+.ears-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ears-toggle input { width: 22px; height: 22px; accent-color: var(--voiced-ink); }
 .mode-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
 .mode-btn {
   border: 3px solid var(--line);

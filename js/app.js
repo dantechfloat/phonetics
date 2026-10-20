@@ -27,6 +27,7 @@
         slow: state.slow,
         tab: state.tab,
         best: state.best,
+        earsOnly: state.earsOnly,
       }));
     } catch (err) {
       // Storage unavailable (private mode, blocked): ignore.
@@ -39,6 +40,7 @@
     slow: !!saved.slow,
     tab: ["vowel", "diphthong", "consonant", "compare", "quiz"].includes(saved.tab) ? saved.tab : "vowel",
     best: saved.best || {},
+    earsOnly: !!saved.earsOnly,
     openId: null,
     quiz: null,
   };
@@ -564,6 +566,13 @@
         el("h2", { text: "🎮 Sound Game" }),
         el("p", { text: "Listen to a word and find its sound!" }),
         el("p", { class: "section-intro", text: `${QUIZ_LENGTH} questions. Collect as many stars as you can!` }),
+        el("label", { class: "ears-toggle" }, [
+          el("input", {
+            type: "checkbox", checked: state.earsOnly ? "" : false,
+            onchange: (e) => { state.earsOnly = e.target.checked; saveSettings(); },
+          }),
+          " 👂 Ears only: hide the word, so you have to listen",
+        ]),
         el("div", { class: "mode-list" }, Object.entries(MODES).map(([key, m]) =>
           el("button", { type: "button", class: "mode-btn", onclick: () => startQuiz(key) }, [
             el("span", { "aria-hidden": "true", text: m.emoji }),
@@ -598,6 +607,7 @@
 
     const { word, targetId, optionIds } = q.question;
     const target = byId[targetId];
+    const hideWord = state.earsOnly && !q.answered;
     // Visual only: answer() announces the result through the live region.
     const feedback = el("p", { class: "feedback", "aria-hidden": "true" });
 
@@ -617,9 +627,10 @@
         el("span", { class: "quiz-stars", "aria-label": `${q.score} stars`, text: `⭐ ${q.score}` }),
       ]),
       el("div", { class: "quiz-emoji", "aria-hidden": "true", text: word.emoji }),
-      el("p", { class: "quiz-word", text: word.word }),
+      // In ears-only mode the spelling would give the answer away ("sh" in "ship").
+      hideWord ? null : el("p", { class: "quiz-word", text: word.word }),
       q.answered ? transcriptionNode(word[state.notation], sym(target)) : null,
-      el("p", { class: "quiz-question", text: `Which sound do you hear in "${word.word}"?` }),
+      el("p", { class: "quiz-question", text: hideWord ? "Which sound do you hear?" : `Which sound do you hear in "${word.word}"?` }),
       el("button", { type: "button", class: "play-btn", onclick: () => sayWord(word.word) }, "🔊 Listen again"),
       el("div", { class: "options" }, optionIds.map((id) => {
         const p = byId[id];
