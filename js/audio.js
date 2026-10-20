@@ -17,6 +17,9 @@ const SoundPlayer = (() => {
   // loading cannot start after a newer one.
   let playToken = 0;
   let voices = [];
+  // Preloaded audio elements by URL, oldest first.
+  const preloaded = new Map();
+  const PRELOAD_LIMIT = 12;
 
   const hasSpeech = "speechSynthesis" in window;
 
@@ -71,11 +74,30 @@ const SoundPlayer = (() => {
     });
   }
 
+  /**
+   * Start downloading words' recordings so the first tap plays at once.
+   * Fetches the clip that playWord would try first.
+   */
+  function preload(words, { accent = "us" } = {}) {
+    for (const word of words) {
+      const recordings = RECORDINGS[word.toLowerCase()] || {};
+      const rec = recordings[accent] || recordings[accent === "uk" ? "us" : "uk"];
+      const url = rec && rec.urls[0];
+      if (!url || preloaded.has(url)) continue;
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.src = url;
+      preloaded.set(url, audio);
+      if (preloaded.size > PRELOAD_LIMIT) preloaded.delete(preloaded.keys().next().value);
+    }
+  }
+
   /** Try each URL in turn. Resolves true once one starts playing. */
   async function playUrls(urls, slow, token) {
     for (const url of urls) {
       if (token !== playToken) return false;
-      const audio = new Audio(url);
+      const audio = preloaded.get(url) || new Audio(url);
+      audio.currentTime = 0;
       audio.preservesPitch = true;
       audio.playbackRate = slow ? 0.7 : 1;
       currentAudio = audio;
@@ -120,5 +142,5 @@ const SoundPlayer = (() => {
     return "computer";
   }
 
-  return { playWord, playSentence, stop };
+  return { playWord, playSentence, preload, stop };
 })();

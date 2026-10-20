@@ -376,6 +376,7 @@
     ].filter(Boolean));
 
     dialog.setAttribute("aria-label", `${p.name} sound, ${wrap(target)}`);
+    SoundPlayer.preload(p.words.map((w) => w.word), { accent: accent() });
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
   }
@@ -433,8 +434,9 @@
 
   function startQuiz(mode) {
     // Every pool has at least QUIZ_LENGTH sounds, so a round never repeats one.
-    const queue = shuffle(PHONEMES.filter(MODES[mode].pool)).slice(0, QUIZ_LENGTH);
-    state.quiz = { mode, queue, index: 0, score: 0, question: null, answered: null };
+    // Questions are made up front so the next word's audio can be preloaded.
+    const questions = shuffle(PHONEMES.filter(MODES[mode].pool)).slice(0, QUIZ_LENGTH).map(makeQuestion);
+    state.quiz = { mode, questions, index: 0, score: 0, question: null, answered: null };
     nextQuestion();
   }
 
@@ -461,7 +463,9 @@
 
   function nextQuestion() {
     const q = state.quiz;
-    q.question = makeQuestion(q.queue[q.index]);
+    q.question = q.questions[q.index];
+    const upcoming = q.questions[q.index + 1];
+    if (upcoming) SoundPlayer.preload([upcoming.word.word], { accent: accent() });
     q.answered = null;
     render();
     // The button that was clicked is gone; keep keyboard users in the game.
