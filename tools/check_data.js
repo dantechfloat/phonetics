@@ -112,6 +112,11 @@ for (const p of PHONEMES) {
     error(`${where}: only "pair" group sounds can have a pair`);
   }
 
+  const sentenceWords = (p.sentence || "").toLowerCase().split(/\s+/).map((w) => w.replace(/[^a-z-]/g, ""));
+  for (const word of p.highlight || []) {
+    if (!sentenceWords.includes(word.toLowerCase())) error(`${where}: highlight word "${word}" is not in the sentence`);
+  }
+
   if (!Array.isArray(p.words) || p.words.length !== 3) {
     error(`${where}: needs exactly 3 words, has ${p.words ? p.words.length : 0}`);
   }

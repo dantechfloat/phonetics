@@ -368,12 +368,15 @@
   const dialog = document.getElementById("detail");
   const detailContent = document.getElementById("detail-content");
 
-  function highlightSentence(sentence, words) {
+  /** Mark the example words (and simple forms like "eggs") plus any extra `highlight` words. */
+  function highlightSentence(sentence, words, extra = []) {
     const p = el("p", { class: "sentence-text" });
     const stems = words.map((w) => w.word.toLowerCase());
+    const exact = extra.map((w) => w.toLowerCase());
     for (const part of sentence.split(/(\s+)/)) {
       const bare = part.toLowerCase().replace(/[^a-z-]/g, "");
-      const hit = bare && stems.some((s) => bare === s || (bare.startsWith(s) && bare.length - s.length <= 2));
+      const hit = bare && (exact.includes(bare) ||
+        stems.some((s) => bare === s || (bare.startsWith(s) && bare.length - s.length <= 2)));
       p.append(hit ? el("mark", { text: part }) : part);
     }
     return p;
@@ -448,7 +451,7 @@
       el("section", { class: "detail-section" }, [
         el("h3", { text: "💬 Say it in a sentence" }),
         el("div", { class: "sentence" }, [
-          highlightSentence(p.sentence, p.words),
+          highlightSentence(p.sentence, p.words, p.highlight),
           el("button", { type: "button", class: "play-btn small", onclick: () => saySentence(p.sentence) }, "🔊 Listen"),
         ]),
       ]),

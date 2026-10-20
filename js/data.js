@@ -8,6 +8,9 @@
  * Every example word also carries a full transcription in both notations,
  * so switching the notation updates the whole page consistently.
  *
+ * "highlight" optionally lists more words in the sentence that have the
+ * sound (the example words are highlighted anyway).
+ *
  * "name" is a speakable name for the sound ("short i"), used for screen
  * readers (which read IPA symbols poorly) and to tell apart sounds that
  * share a symbol in one notation.
@@ -58,6 +61,7 @@ const PHONEMES = [
       { word: "milk", emoji: "🥛", dj: "milk", kk: "mɪlk" },
     ],
     sentence: "The big pig drinks milk.",
+    highlight: ["big", "drinks"],
   },
   {
     id: "short-e", name: "short e", category: "vowel", group: "short", dj: "e", kk: "ɛ",
@@ -68,6 +72,7 @@ const PHONEMES = [
       { word: "red", emoji: "🔴", dj: "red", kk: "rɛd" },
     ],
     sentence: "Ten red eggs are on the bed.",
+    highlight: ["ten"],
   },
   {
     id: "short-ae", name: "short a", category: "vowel", group: "short", dj: "æ", kk: "æ",
@@ -78,6 +83,7 @@ const PHONEMES = [
       { word: "hat", emoji: "🎩", dj: "hæt", kk: "hæt" },
     ],
     sentence: "The cat has a black hat.",
+    highlight: ["has", "black"],
   },
   {
     id: "short-uh", name: "short uh", category: "vowel", group: "short", dj: "ʌ", kk: "ʌ",
@@ -108,6 +114,7 @@ const PHONEMES = [
       { word: "cook", emoji: "🧑‍🍳", dj: "kuk", kk: "kʊk" },
     ],
     sentence: "Look at the good book.",
+    highlight: ["look", "good"],
   },
   {
     id: "schwa", name: "lazy uh", category: "vowel", group: "short", dj: "ə", kk: "ə",
@@ -118,6 +125,7 @@ const PHONEMES = [
       { word: "panda", emoji: "🐼", dj: "ˈpændə", kk: "ˈpændə" },
     ],
     sentence: "A panda eats a banana.",
+    highlight: ["a"],
   },
   {
     id: "schwa-r", name: "lazy er", category: "vowel", group: "short", dj: "ə", kk: "ɚ",
@@ -141,6 +149,7 @@ const PHONEMES = [
       { word: "cheese", emoji: "🧀", dj: "tʃiːz", kk: "tʃiz" },
     ],
     sentence: "I see three green trees.",
+    highlight: ["see", "three", "green"],
   },
   {
     id: "long-ah", name: "long ah", category: "vowel", group: "long", dj: "ɑː", kk: "ɑ",
@@ -203,6 +212,7 @@ const PHONEMES = [
       { word: "kite", emoji: "🪁", dj: "kait", kk: "kaɪt" },
     ],
     sentence: "I ride my bike and fly a kite.",
+    highlight: ["I", "ride", "my", "fly"],
   },
   {
     id: "di-oy", name: "oy", category: "diphthong", group: "diphthong", dj: "ɔi", kk: "ɔɪ",
@@ -276,6 +286,7 @@ const PHONEMES = [
       { word: "cup", emoji: "☕", dj: "kʌp", kk: "kʌp" },
     ],
     sentence: "The pig has a pink pen.",
+    highlight: ["pink"],
   },
   {
     id: "c-b", name: "b", category: "consonant", group: "pair", voicing: "voiced", pair: "c-p", dj: "b", kk: "b",
@@ -286,6 +297,7 @@ const PHONEMES = [
       { word: "bed", emoji: "🛏️", dj: "bed", kk: "bɛd" },
     ],
     sentence: "Ben has a big blue ball.",
+    highlight: ["Ben", "big", "blue"],
   },
   {
     id: "c-t", name: "t", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-d", dj: "t", kk: "t",
@@ -296,6 +308,7 @@ const PHONEMES = [
       { word: "cat", emoji: "🐱", dj: "kæt", kk: "kæt" },
     ],
     sentence: "Tom has ten toys.",
+    highlight: ["Tom", "toys"],
   },
   {
     id: "c-d", name: "d", category: "consonant", group: "pair", voicing: "voiced", pair: "c-t", dj: "d", kk: "d",
@@ -316,6 +329,7 @@ const PHONEMES = [
       { word: "book", emoji: "📖", dj: "buk", kk: "bʊk" },
     ],
     sentence: "Kate has a key and a cake.",
+    highlight: ["Kate"],
   },
   {
     id: "c-g", name: "g", category: "consonant", group: "pair", voicing: "voiced", pair: "c-k", dj: "g", kk: "g",
@@ -346,6 +360,7 @@ const PHONEMES = [
       { word: "five", emoji: "5️⃣", dj: "faiv", kk: "faɪv" },
     ],
     sentence: "Five vans are very big.",
+    highlight: ["very"],
   },
   {
     id: "c-th", name: "quiet th", category: "consonant", group: "pair", voicing: "voiceless", pair: "c-dh", dj: "θ", kk: "θ",
@@ -356,6 +371,7 @@ const PHONEMES = [
       { word: "bath", emoji: "🛁", dj: "bɑːθ", kk: "bæθ" },
     ],
     sentence: "Thank you for the three gifts.",
+    highlight: ["thank"],
   },
   {
     id: "c-dh", name: "buzzy th", category: "consonant", group: "pair", voicing: "voiced", pair: "c-th", dj: "ð", kk: "ð",
@@ -376,6 +392,7 @@ const PHONEMES = [
       { word: "sock", emoji: "🧦", dj: "sɔk", kk: "sɑk" },
     ],
     sentence: "Sam sees the sun from the bus.",
+    highlight: ["Sam", "sees"],
   },
   {
     id: "c-z", name: "z", category: "consonant", group: "pair", voicing: "voiced", pair: "c-s", dj: "z", kk: "z",
@@ -396,6 +413,7 @@ const PHONEMES = [
       { word: "fish", emoji: "🐟", dj: "fiʃ", kk: "fɪʃ" },
     ],
     sentence: "She sees a fish from the ship.",
+    highlight: ["she"],
   },
   {
     id: "c-zh", name: "zh", category: "consonant", group: "pair", voicing: "voiced", pair: "c-sh", dj: "ʒ", kk: "ʒ",
@@ -448,6 +466,7 @@ const PHONEMES = [
       { word: "mouse", emoji: "🐭", dj: "maus", kk: "maʊs" },
     ],
     sentence: "My mouse drinks milk.",
+    highlight: ["my"],
   },
   {
     id: "c-n", name: "n", category: "consonant", group: "other", voicing: "voiced", dj: "n", kk: "n",
@@ -458,6 +477,7 @@ const PHONEMES = [
       { word: "nut", emoji: "🥜", dj: "nʌt", kk: "nʌt" },
     ],
     sentence: "Nine nuts are on my nose.",
+    highlight: ["on"],
   },
   {
     id: "c-ng", name: "ng", category: "consonant", group: "other", voicing: "voiced", dj: "ŋ", kk: "ŋ",
@@ -478,6 +498,7 @@ const PHONEMES = [
       { word: "lemon", emoji: "🍋", dj: "ˈlemən", kk: "ˈlɛmən" },
     ],
     sentence: "The lion plays with a leaf.",
+    highlight: ["plays"],
   },
   {
     id: "c-r", name: "r", category: "consonant", group: "other", voicing: "voiced", dj: "r", kk: "r",
@@ -488,6 +509,7 @@ const PHONEMES = [
       { word: "rain", emoji: "🌧️", dj: "rein", kk: "ren" },
     ],
     sentence: "The red rabbit runs in the rain.",
+    highlight: ["runs"],
   },
   {
     id: "c-w", name: "w", category: "consonant", group: "other", voicing: "voiced", dj: "w", kk: "w",
@@ -498,6 +520,7 @@ const PHONEMES = [
       { word: "web", emoji: "🕸️", dj: "web", kk: "wɛb" },
     ],
     sentence: "We wash the window with water.",
+    highlight: ["we", "wash", "with"],
   },
   {
     id: "c-y", name: "y", category: "consonant", group: "other", voicing: "voiced", dj: "j", kk: "j",
