@@ -218,7 +218,9 @@
     saveSettings();
     syncHeader();
     render();
-    if (state.openId) openDetail(state.openId);
+    // state.openId is only cleared by the dialog's "close" event, a task
+    // after it closes, so check the dialog itself.
+    if (dialog.open) openDetail(state.openId);
     toast(`${notation().label} symbols (${notation().accentName})`);
   }
 
