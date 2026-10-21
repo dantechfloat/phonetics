@@ -64,6 +64,21 @@ def api_get(params, retries=5):
             time.sleep(10 * (attempt + 1))
 
 
+def api_pages(params):
+    """Yield the pages of a query, following "continue" so that long
+    results (e.g. more than imlimit files across a batch of pages) aren't
+    cut off. A page can be yielded more than once, each time with more of
+    its results."""
+    cont = {}
+    while True:
+        data = api_get({**params, **cont})
+        yield from data["query"]["pages"]
+        if "continue" not in data:
+            return
+        cont = data["continue"]
+        time.sleep(1)
+
+
 def words_from_data():
     text = DATA_JS.read_text(encoding="utf-8")
     return sorted(set(re.findall(r'word:\s*"([^"]+)"', text)))
@@ -74,16 +89,15 @@ def audio_files(words):
     found = {}
     for i in range(0, len(words), 40):
         batch = words[i:i + 40]
-        data = api_get({
+        for page in api_pages({
             "action": "query",
             "titles": "|".join(batch),
             "prop": "images",
             "imlimit": "max",
-        })
-        for page in data["query"]["pages"]:
+        }):
             files = [img["title"] for img in page.get("images", [])
                      if img["title"].lower().endswith(AUDIO_EXT)]
-            found[page["title"]] = files
+            found.setdefault(page["title"], []).extend(files)
         time.sleep(1)
     return found
 
@@ -140,14 +154,13 @@ def file_info(titles):
     infos = {}
     titles = list(titles)
     for i in range(0, len(titles), 40):
-        data = api_get({
+        for page in api_pages({
             "action": "query",
             "titles": "|".join(titles[i:i + 40]),
             "prop": "imageinfo",
             "iiprop": "url|extmetadata",
             "iiextmetadatafilter": "Artist|LicenseShortName|LicenseUrl",
-        })
-        for page in data["query"]["pages"]:
+        }):
             info = page.get("imageinfo")
             if not info:
                 continue
