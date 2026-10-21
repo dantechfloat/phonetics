@@ -27,7 +27,8 @@ const RECORDINGS = vm.runInContext("RECORDINGS", context);
 const recs = Object.entries(RECORDINGS).flatMap(([word, byAccent]) =>
   Object.entries(byAccent).map(([accent, rec]) => ({ where: `${word} (${accent.toUpperCase()})`, ...rec })));
 
-const normalize = (title) => title.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+// Commons file title: spaces for underscores and a capital first letter.
+const normalize = (file) => `File:${file.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase())}`;
 
 async function fileInfo(files) {
   const params = new URLSearchParams({
@@ -61,7 +62,7 @@ async function fileInfo(files) {
     const renamed = Object.fromEntries((query.normalized || []).map((n) => [n.from, n.to]));
     const pages = Object.fromEntries(query.pages.map((p) => [p.title, p]));
     for (const rec of batch) {
-      const title = renamed[`File:${rec.file}`] || normalize(`File:${rec.file}`);
+      const title = renamed[`File:${rec.file}`] || normalize(rec.file);
       const page = pages[title];
       const url = page && page.imageinfo && page.imageinfo[0].url.split("?")[0];
       if (!url) broken.push(`${rec.where}: ${rec.file} no longer exists on Commons`);
