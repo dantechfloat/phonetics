@@ -198,16 +198,19 @@
   const notationButtons = notationGroup.querySelectorAll("[data-notation]");
   notationButtons.forEach((btn) => {
     btn.addEventListener("click", () => setNotation(btn.dataset.notation));
-    btn.addEventListener("keydown", (e) => {
-      const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
-      if (!step) return;
-      e.preventDefault();
-      const i = NOTATIONS.findIndex((n) => n.id === state.notation);
-      const next = NOTATIONS[(i + step + NOTATIONS.length) % NOTATIONS.length].id;
-      setNotation(next);
-      notationGroup.querySelector(`[data-notation="${next}"]`).focus();
-    });
+    btn.addEventListener("keydown", (e) => notationArrowKeys(e, notationGroup));
   });
+
+  /** Arrow keys move through a notation radio group, like native radio buttons. */
+  function notationArrowKeys(e, root) {
+    const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const i = NOTATIONS.findIndex((n) => n.id === state.notation);
+    setNotation(NOTATIONS[(i + step + NOTATIONS.length) % NOTATIONS.length].id);
+    // The dialog's group is rebuilt on a notation change, so look it up again.
+    root.querySelector('[role="radio"][aria-checked="true"]').focus();
+  }
 
   function setNotation(id) {
     if (id === state.notation) return;
@@ -419,10 +422,12 @@
           NOTATIONS.map((n) => el("button", {
             type: "button", role: "radio",
             "aria-checked": String(n.id === state.notation),
+            tabindex: n.id === state.notation ? "0" : "-1",
             onclick: () => {
               setNotation(n.id);
               detailContent.querySelector(`.detail-notation [aria-checked="true"]`).focus();
             },
+            onkeydown: (e) => notationArrowKeys(e, detailContent),
           }, `${n.label} (${n.accentName})`))),
         el("button", {
           type: "button", class: "play-btn",
