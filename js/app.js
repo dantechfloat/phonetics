@@ -487,6 +487,7 @@
       partner ? el("button", {
         type: "button", class: "partner-link",
         onclick: () => {
+          SoundPlayer.stop();
           openDetail(partner.id);
           // The clicked link was replaced; focus the new one, which leads back.
           detailContent.querySelector(".partner-link").focus();
@@ -539,23 +540,26 @@
 
   async function recordWord(word) {
     if (recording) return;
+    let session;
     try {
-      const session = await SoundPlayer.startRecording({ maxMs: 3000 });
-      recording = { word, session };
-      drawRecorder();
-      announce(`Recording. Say ${word}!`);
-      const url = await session.done;
-      if (myClips.has(word)) URL.revokeObjectURL(myClips.get(word));
-      myClips.set(word, url);
-      recording = null;
-      drawRecorder();
-      // Closing the dialog stops the recording; don't play it back then.
-      if (dialog.open) SoundPlayer.playClip(url);
+      session = await SoundPlayer.startRecording({ maxMs: 3000 });
     } catch (err) {
-      recording = null;
-      drawRecorder();
-      toast("🎤 The microphone isn't available");
+      // AbortError: the dialog closed, another sound played or another
+      // recording started while the browser asked for the microphone.
+      if (err.name !== "AbortError") toast("🎤 The microphone isn't available");
+      return;
     }
+    recording = { word, session };
+    drawRecorder();
+    announce(`Recording. Say ${word}!`);
+    const url = await session.done;
+    if (myClips.has(word)) URL.revokeObjectURL(myClips.get(word));
+    myClips.set(word, url);
+    recording = null;
+    drawRecorder();
+    // Closing the dialog or playing another sound stops the recording; keep
+    // it, but don't play it back over that sound.
+    if (dialog.open && !session.interrupted()) SoundPlayer.playClip(url);
   }
 
   // ---------- Recording credits ----------

@@ -16,8 +16,9 @@
 
 const SoundPlayer = (() => {
   let currentAudio = null;
-  // Increases on every play request so an older sound that is still
-  // loading cannot start after a newer one.
+  // Increases on every stop(), and so on every play request, so an older
+  // sound that is still loading cannot start after a newer one, and a
+  // recording can tell that something else interrupted it.
   let playToken = 0;
   let voices = [];
   // Preloaded audio elements by URL, oldest first.
@@ -144,12 +145,20 @@ const SoundPlayer = (() => {
 
   /**
    * Record from the microphone until session.stop() or maxMs.
-   * Resolves to { stop, done }, where done resolves to a blob URL.
-   * Rejects if there is no microphone or permission is denied.
+   * Resolves to { stop, done, interrupted }, where done resolves to a blob
+   * URL and interrupted() is true if stop() ended the recording early.
+   * Rejects if there is no microphone or permission is denied, and with an
+   * AbortError if stop() was called while the browser asked for permission.
    */
   async function startRecording({ maxMs = 3000 } = {}) {
     stop();
+    const token = playToken;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (token !== playToken) {
+      // The dialog closed or another sound played meanwhile: don't record.
+      stream.getTracks().forEach((track) => track.stop());
+      throw new DOMException("Recording cancelled", "AbortError");
+    }
     const recorder = new MediaRecorder(stream);
     const chunks = [];
     recorder.addEventListener("dataavailable", (e) => chunks.push(e.data));
@@ -165,7 +174,11 @@ const SoundPlayer = (() => {
     recorder.start();
     activeRecorder = recorder;
     const timer = setTimeout(() => recorder.state === "recording" && recorder.stop(), maxMs);
-    return { stop: () => recorder.state === "recording" && recorder.stop(), done };
+    return {
+      stop: () => recorder.state === "recording" && recorder.stop(),
+      done,
+      interrupted: () => token !== playToken,
+    };
   }
 
   /** Play a clip from a URL, e.g. the learner's own recording. */
