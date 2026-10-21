@@ -975,23 +975,28 @@
   document.getElementById("offline-btn").addEventListener("click", async (e) => {
     const button = e.currentTarget;
     const status = document.getElementById("offline-status");
-    // Same cache name as MEDIA_CACHE in sw.js.
-    const cache = await caches.open("sound-explorer-media-v1");
     const urls = Object.values(RECORDINGS)
       .flatMap((byAccent) => Object.values(byAccent))
       .map((rec) => new URL(rec.urls[0], location.href).href);
     button.disabled = true;
-    let failed = 0;
-    for (const [i, url] of urls.entries()) {
-      status.textContent = `${i + 1} / ${urls.length}…`;
-      try {
-        if (!(await cache.match(url))) await cache.add(new Request(url, { mode: "cors", credentials: "omit" }));
-      } catch (err) {
-        failed++;
+    try {
+      // Same cache name as MEDIA_CACHE in sw.js.
+      const cache = await caches.open("sound-explorer-media-v1");
+      let failed = 0;
+      for (const [i, url] of urls.entries()) {
+        status.textContent = `${i + 1} / ${urls.length}…`;
+        try {
+          if (!(await cache.match(url))) await cache.add(new Request(url, { mode: "cors", credentials: "omit" }));
+        } catch (err) {
+          failed++;
+        }
       }
+      status.textContent = failed ? `Saved ${urls.length - failed} sounds; ${failed} failed. Try again later.` : `✅ All ${urls.length} sounds saved.`;
+    } catch (err) {
+      // Storage is blocked or full.
+      status.textContent = "This browser can't save sounds right now.";
     }
     button.disabled = false;
-    status.textContent = failed ? `Saved ${urls.length - failed} sounds; ${failed} failed. Try again later.` : `✅ All ${urls.length} sounds saved.`;
     announce(status.textContent);
   });
 
