@@ -639,6 +639,7 @@
   }
 
   const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
+  const starCount = (n) => `${n} star${n === 1 ? "" : "s"}`;
   const bestKey = (mode, n = state.notation) => `${n}:${mode}`;
 
   /** Save the round's score as the best for its game in the current notation. */
@@ -846,7 +847,7 @@
       : "Nice try! Let's play again! 😊";
     box.append(
       el("h2", { text: message }),
-      el("p", { class: "big-stars", "aria-label": `${q.score} stars`, text: "⭐".repeat(q.score) || "🌱" }),
+      el("p", { class: "big-stars", role: "img", "aria-label": starCount(q.score), text: "⭐".repeat(q.score) || "🌱" }),
       el("p", { text: `You got ${q.score} out of ${QUIZ_LENGTH}.` }),
       el("p", { class: "section-intro", text: `Best score (${notationById[q.notation].label}): ${best} ⭐` }),
       el("div", { class: "quiz-actions" }, [
@@ -873,7 +874,7 @@
     }
     if (type === "find") {
       return [
-        el("p", { class: "quiz-symbol", "aria-label": `${target.name} sound`, text: wrap(sym(target)) }),
+        el("p", { class: "quiz-symbol", role: "img", "aria-label": `${target.name} sound`, text: wrap(sym(target)) }),
         el("p", { class: "quiz-question", text: "Which word has this sound?" }),
         answered ? el("p", {}, [el("strong", { text: word.word }), " ", transcriptionNode(word[state.notation], sym(target))]) : null,
       ];
@@ -936,7 +937,7 @@
     box.append(
       el("div", { class: "quiz-progress" }, [
         el("span", { text: `Question ${q.index + 1} / ${QUIZ_LENGTH}` }),
-        el("span", { class: "quiz-stars", "aria-label": `${q.score} stars`, text: `⭐ ${q.score}` }),
+        el("span", { class: "quiz-stars", role: "img", "aria-label": starCount(q.score), text: `⭐ ${q.score}` }),
       ]),
       ...questionPrompt(question, q.answered),
       el("div", { class: "options" }, question.options.map((choice) => optionButton(question, choice, q.answered))),
