@@ -622,7 +622,14 @@
   }
 
   const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
-  const bestKey = (mode) => `${state.notation}:${mode}`;
+  const bestKey = (mode, n = state.notation) => `${n}:${mode}`;
+
+  /** Save the round's score as the best for its game in the current notation. */
+  function finishQuiz(q) {
+    q.notation = state.notation;
+    state.best[bestKey(q.mode)] = Math.max(q.score, state.best[bestKey(q.mode)] || 0);
+    saveSettings();
+  }
 
   // ---------- Progress ----------
   /** "new", "learning" or "known" for a sound, from saved right/wrong answers. */
@@ -813,9 +820,9 @@
   }
 
   function renderResults(box, q) {
-    const best = Math.max(q.score, state.best[bestKey(q.mode)] || 0);
-    state.best[bestKey(q.mode)] = best;
-    saveSettings();
+    // Saved once by finishQuiz: a notation change redraws this screen, and
+    // must not copy the score into the other notation's best.
+    const best = state.best[bestKey(q.mode, q.notation)];
     const message = q.score === QUIZ_LENGTH ? "Perfect! You are a Sound Star! 🏆"
       : q.score >= 7 ? "Awesome work! 🎉"
       : q.score >= 4 ? "Good job! Keep practicing! 💪"
@@ -824,7 +831,7 @@
       el("h2", { text: message }),
       el("p", { class: "big-stars", "aria-label": `${q.score} stars`, text: "⭐".repeat(q.score) || "🌱" }),
       el("p", { text: `You got ${q.score} out of ${QUIZ_LENGTH}.` }),
-      el("p", { class: "section-intro", text: `Best score (${notation().label}): ${best} ⭐` }),
+      el("p", { class: "section-intro", text: `Best score (${notationById[q.notation].label}): ${best} ⭐` }),
       el("div", { class: "quiz-actions" }, [
         el("button", { type: "button", class: "play-btn", onclick: () => startQuiz(q.mode) }, "🔁 Play again"),
         el("button", { type: "button", class: "mode-btn", onclick: () => { state.quiz = null; render(); view.querySelector(".mode-btn").focus(); } }, "Choose a game"),
@@ -925,6 +932,7 @@
             q.index++;
             if (q.index < QUIZ_LENGTH) nextQuestion();
             else {
+              finishQuiz(q);
               render();
               view.querySelector(".quiz .play-btn").focus();
             }
