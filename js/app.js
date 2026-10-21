@@ -257,7 +257,7 @@
     return el("button", {
       type: "button",
       class: "card",
-      dataset: { cat: p.category, ...(p.voicing ? { voicing: p.voicing } : {}) },
+      dataset: { sound: p.id, cat: p.category, ...(p.voicing ? { voicing: p.voicing } : {}) },
       "aria-label": `${p.name} sound, as in ${first.word}`,
       onclick: () => openDetail(p.id),
     }, [
@@ -347,7 +347,7 @@
         const differs = NOTATIONS.some((n) => p[n.id] !== p[NOTATIONS[0].id]);
         return el("tr", { class: differs ? "differs" : null }, [
           el("th", { scope: "row" }, el("button", {
-            type: "button", class: "compare-sound",
+            type: "button", class: "compare-sound", dataset: { sound: p.id },
             onclick: () => openDetail(p.id),
           }, [
             el("span", { "aria-hidden": "true", text: p.words[0].emoji }), " ",
@@ -506,8 +506,14 @@
   }
 
   dialog.addEventListener("close", () => {
+    const id = state.openId;
     state.openId = null;
     SoundPlayer.stop();
+    // The browser returns focus to the button that opened the dialog, but a
+    // notation change redraws the page behind it. Focus the new copy.
+    if (document.activeElement === document.body || dialog.contains(document.activeElement)) {
+      (view.querySelector(`[data-sound="${id}"]`) || view).focus();
+    }
   });
   // Close when clicking the dark backdrop.
   dialog.addEventListener("click", (e) => {
@@ -799,7 +805,7 @@
       const l = level(p);
       counts[l]++;
       return el("button", {
-        type: "button", class: `sound-chip ${l}`,
+        type: "button", class: `sound-chip ${l}`, dataset: { sound: p.id },
         "aria-label": `${p.name}: ${LEVELS[l].label}`,
         title: `${p.name}: ${LEVELS[l].label}`,
         onclick: () => openDetail(p.id),
@@ -929,7 +935,9 @@
       el("div", { class: "options" }, question.options.map((choice) => optionButton(question, choice, q.answered))),
       feedback,
       q.answered ? el("div", { class: "quiz-actions" }, [
-        target ? el("button", { type: "button", class: "mode-btn", onclick: () => openDetail(target.id) }, `Learn ${wrap(sym(target))}`) : null,
+        target ? el("button", {
+          type: "button", class: "mode-btn", dataset: { sound: target.id }, onclick: () => openDetail(target.id),
+        }, `Learn ${wrap(sym(target))}`) : null,
         el("button", {
           type: "button", class: "play-btn next-btn",
           onclick: () => {
