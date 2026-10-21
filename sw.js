@@ -4,7 +4,7 @@
  * - The page itself (HTML, CSS, JS): network first, so changes show up right
  *   away, with the cached copy as a fallback when offline.
  * - Fonts and recordings: cache first. Recordings are cached the first time
- *   they play, or all at once with the "Save sounds for offline" button.
+ *   they play, or all at once with the "Save all sounds for offline use" button.
  *
  * Service workers only run over http(s), so opening index.html from disk
  * works as before, just without offline support.

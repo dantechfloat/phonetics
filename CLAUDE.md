@@ -15,7 +15,7 @@ node tools/check_data.js              # validate js/data.js + js/recordings.js, 
 node tools/check_links.js             # check every recording still exists on Commons (needs network)
 ```
 
-CI (`.github/workflows/checks.yml`) runs `check_data.js` on every push and pull request, and `check_links.js` weekly.
+There is no CI, so run `check_data.js` after changing data, and `check_links.js` now and then (Commons files get renamed or deleted).
 
 The page needs internet access for the Wikimedia recordings and Google Fonts, unless they are cached: when served over http(s), `sw.js` (service worker) caches the page network-first and fonts/recordings cache-first, answering audio `Range` requests from the cached whole file. The footer's "Save all sounds for offline use" button fills the media cache (`sound-explorer-media-v1`, same name in app.js and sw.js). If you add a page file, add it to `PAGE_FILES` in sw.js. Opening `index.html` from disk works without the service worker.
 
@@ -23,7 +23,7 @@ The page needs internet access for the Wikimedia recordings and Google Fonts, un
 
 Scripts are plain globals loaded in a fixed order by `index.html` (order matters):
 
-1. `js/data.js` defines `NOTATIONS`, `LEAD_INS`, `CATEGORIES`, `GROUPS`, `PHONEMES`, the single source of content.
+1. `js/data.js` defines `NOTATIONS`, `LEAD_INS`, `CATEGORIES`, `GROUPS`, `PHONEMES` and `MINIMAL_PAIRS` (word pairs for the "Which Word?" game), the single source of content.
 2. `js/recordings.js` defines `RECORDINGS` (word → `{uk, us}` → `{ file, urls: [mp3Url, originalUrl], page, author, license, licenseUrl?, says? }`; the author and license feed the Credits dialog). `says` is set when the clip is a phrase such as "a cat"; the build script only accepts the lead-in words in its `LEAD_INS`. **Generated; do not edit by hand.**
 3. `js/audio.js` defines the `SoundPlayer` IIFE (`playWord`, `playSentence`, `preload`, `stop`, plus `startRecording` / `playClip` for the opt-in "Say it yourself" recorder; recordings stay in memory as blob URLs and are never uploaded).
 4. `js/app.js` is an IIFE holding all UI state and rendering.
@@ -43,12 +43,12 @@ When you add or change words, keep both transcriptions consistent with the phone
 - Full re-render via `render()` into `<main id="view">` using the small `el(tag, attrs, children)` DOM helper (no innerHTML templating).
 - `tokenize()` splits a transcription by longest-match against the current notation's symbols, so multi-character symbols like `tʃ` and `ai` stay whole. It is used to highlight the target sound and to pick quiz distractors that don't occur in the word.
 - Tabs: one per category, `compare` (DJ vs KK table; "tricky" symbols are computed as symbols that different notations use for disjoint sets of sounds) and `quiz`.
-- The detail view is a native `<dialog>`. The Sound Game (`MODES`, `GAME_GROUPS`, `QUIZ_LENGTH = 10`) keeps its state in `state.quiz`. Each mode has a question `type`: `hear` (hear a word, pick its sound), `find` (see a symbol, pick the picture with that sound) or `read` (see a transcription, pick the picture). All questions of a round are made in `startQuiz`, each with `answer` and `options` (sound ids for `hear`, word texts otherwise).
+- The detail view is a native `<dialog>`. The Sound Game (`MODES`, `GAME_GROUPS`, `QUIZ_LENGTH = 10`) keeps its state in `state.quiz`. Each mode has a question `type`: `hear` (hear a word, pick its sound), `pairs` (hear one word of a minimal pair, pick which one), `find` (see a symbol, pick the picture with that sound) or `read` (see a transcription, pick the picture). All questions of a round are made in `startQuiz`, each with `answer` and `options` (sound ids for `hear`, word texts otherwise).
 - Settings (notation, slow, tab, best scores keyed `<notation>:<mode>`, ears-only, per-sound `progress`) persist to `localStorage` key `soundExplorer.v1`, wrapped in try/catch so the page still works without storage.
 
 ### Audio fallback (`js/audio.js`)
 
-`playWord` tries, in order: a real recording in the selected accent (MP3 transcode, then the original file), then the browser `speechSynthesis` voice in that accent, then a recording in the other accent, then any speech voice. It returns `"recorded" | "computer" | "recorded-other" | "skipped"`, and app.js shows a toast for each. A `playToken` counter cancels stale plays. Sentences always use speech synthesis. Slow mode sets `playbackRate` to 0.7 for recordings and the speech rate to 0.6.
+`playWord` tries, in order: a real recording in the selected accent (MP3 transcode, then the original file), then the browser `speechSynthesis` voice in that accent, then a recording in the other accent, then any speech voice. It returns `"recorded" | "computer" | "recorded-other" | "skipped"`, and app.js shows a toast for each. A `playToken` counter (bumped by every `stop()`) cancels stale plays and recordings still waiting for microphone permission. Sentences always use speech synthesis. Slow mode sets `playbackRate` to 0.7 for recordings and the speech rate to 0.6.
 
 ### Styling
 
