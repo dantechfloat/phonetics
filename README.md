@@ -1,31 +1,39 @@
 # Sound Explorer
 
-A kid-friendly web page for learning English phonetic symbols.
+**日本語** | [English](README.en.md)
 
-- 45 sounds: short and long vowels, double vowels, and consonants
-- Switch between **DJ** (British) and **KK** (American) symbols at the top of the page
-- Every sound has a mouth tip, 3 picture words with full transcriptions, and an example sentence
-- Real voice recordings (UK for DJ, US for KK) from Wiktionary / Wikimedia Commons, with the browser's computer voice as a fallback
-- "Slow" mode for slower playback
-- Sound Game: listen to a word and pick its sound (10 questions, best scores are saved)
+子ども向けの、英語の発音記号を学べるウェブページです。
 
-## Run
+- 45の音：短母音・長母音、二重母音、子音
+- ページ上部で **DJ**（イギリス式）と **KK**（アメリカ式）の発音記号を切り替えられます
+- それぞれの音に、口の形のコツ、よくあるつづり（例：tree の "ee"）、発音記号つきの絵カード単語3つ、例文があります。例文ではその音を含む単語が全て強調表示されます
+- Wiktionary / Wikimedia Commons の実際の録音（DJ はイギリス英語、KK はアメリカ英語）を再生します。録音がない場合はブラウザの合成音声を使います
+- 「ゆっくり」モードで再生速度を落とせます
+- 「自分で言ってみよう」（Say it yourself）：自分の声を録音して、実際の録音と聞き比べられます（録音は端末内にだけ保存され、アップロードされることはありません）
+- DJ と KK の比較タブ：同じ音を並べて表示し、両方で同じ見た目なのに違う音を表す「まぎらわしい記号」も紹介します
+- 音のグループごとに、印刷できるフラッシュカードがあります
+- サウンドゲーム（全10問、最高得点はゲームと表記ごとに保存されます）：
+  - 聞いて答える：単語を聞いてその音を選ぶ（母音・子音・ミックス）、または「Which Word?」で2つの単語を聞き分ける（ship と sheep のどっち？）。「耳だけ」オプションをオンにすると単語が隠れるので、聞いて答えるしかありません
+  - 読んで答える：「Find the Sound」（記号を見て、その音を含む絵を選ぶ）と「Read It!」（発音表記を読んで絵を選ぶ）
+  - 音ごとの習熟度（まだ試していない・練習中・覚えた！）が記録され、間違えた音ほど多く出題されます
 
-No build step. Open `index.html` in a browser, or serve the folder:
+## 実行方法
+
+ビルドは不要です。ブラウザで `index.html` を開くか、フォルダをサーバーで配信してください。
 
 ```sh
 python3 -m http.server 8000
-# then open http://localhost:8000
+# その後 http://localhost:8000 を開く
 ```
 
-An internet connection is needed for the recordings and web fonts. When the page is served over http(s) (not opened from disk), it works offline after the first visit, can be installed as an app, and the footer has a button to save all recordings for offline use, e.g. before a class with poor Wi-Fi.
+録音とウェブフォントの読み込みにはインターネット接続が必要です。http(s) で配信した場合（ファイルを直接開いた場合を除く）は、一度アクセスすればオフラインでも動作し、アプリとしてインストールすることもできます。また、フッターのボタンで全ての録音をオフライン用に保存できます。Wi-Fi が不安定な教室で使う前などに便利です。
 
-## Files
+## ファイル構成
 
-- `js/data.js` - all sounds, words, transcriptions and sentences
-- `js/recordings.js` - recording URLs (generated)
-- `js/audio.js` - playback and fallbacks
-- `js/app.js` - page logic and the Sound Game
-- `tools/build_recordings.py` - regenerates `js/recordings.js` after you change the words in `js/data.js`
-- `tools/check_data.js` - checks `js/data.js` and `js/recordings.js` for mistakes (`node tools/check_data.js`)
-- `tools/check_links.js` - checks that every recording still exists on Wikimedia Commons (`node tools/check_links.js`)
+- `js/data.js` - 全ての音、単語、発音表記、例文
+- `js/recordings.js` - 録音の URL（自動生成）
+- `js/audio.js` - 再生処理とフォールバック
+- `js/app.js` - ページの処理とサウンドゲーム
+- `tools/build_recordings.py` - `js/data.js` の単語を変更した後に `js/recordings.js` を再生成します
+- `tools/check_data.js` - `js/data.js` と `js/recordings.js` の誤りをチェックします（`node tools/check_data.js`）
+- `tools/check_links.js` - 全ての録音が Wikimedia Commons にまだ存在するか確認します（`node tools/check_links.js`）
